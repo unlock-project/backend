@@ -1,3 +1,2 @@
 from django.contrib import admin
-
-# Register your models here.
+import admin_app.services.users_app_admin
