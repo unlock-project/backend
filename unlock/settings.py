@@ -87,10 +87,21 @@ WSGI_APPLICATION = 'unlock.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+DATABASE_ENGINE = 'django.db.backends.sqlite3'
+DATABASE_NAME = BASE_DIR / os.getenv('UNLOCK_DATABASE_NAME', 'db')
+
+if os.getenv('UNLOCK_DATABASE') == 'postgres':
+    DATABASE_ENGINE = 'django.db.backends.postgresql_psycopg2'
+    DATABASE_NAME = os.getenv('UNLOCK_DATABASE_NAME')
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': DATABASE_ENGINE,
+        'HOST': os.getenv('UNLOCK_DATABASE_HOST'),
+        'PORT': os.getenv('UNLOCK_DATABASE_PORT'),
+        'NAME': DATABASE_NAME,
+        'USER': os.getenv('UNLOCK_DATABASE_USER'),
+        'PASSWORD': os.getenv('UNLOCK_DATABASE_PASSWORD')
     }
 }
 
