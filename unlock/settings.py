@@ -14,7 +14,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 
-load_dotenv('config.env')
+load_dotenv('../config.env')
 
 EMAIL_HOST = os.getenv('UNLOCK_EMAIL_HOST')
 
@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'unlock.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASE_ENGINE = 'django.db.backends.sqlite3'
-DATABASE_NAME = BASE_DIR / os.getenv('UNLOCK_DATABASE_NAME', 'db')
+DATABASE_NAME = BASE_DIR / os.getenv('UNLOCK_DATABASE_NAME', 'db.sqlite3')
 
 if os.getenv('UNLOCK_DATABASE') == 'postgres':
     DATABASE_ENGINE = 'django.db.backends.postgresql_psycopg2'
