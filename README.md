@@ -30,7 +30,7 @@ of 6 modules.
 | `UNLOCK_DEBUG`               | No       | `false`       | Toggles Django debug mode.                                                                                                                            |
 | `UNLOCK_ALLOWED_HOSTS`       | No       | `[]`          | List of hosts, separated by a space character, that are allowed to connect to the application. Required in production. Do not required in debug mode. |
 | `UNLOCK_SECRET_KEY`          | Yes      | -             | The key used by Djnago for security. Must be a secure random string.                                                                                  |
-| `UNLOCK_DATABASE`            | Yes      | `sqlite`      | Name of the DBMS to use. Possible options: `sqlite` or `postgres`.                                                                                    |
+| `UNLOCK_DATABASE`            | No       | `sqlite`      | Name of the DBMS to use. Possible options: `sqlite` or `postgres`.                                                                                    |
 | `UNLOCK_DATABASE_HOST`       | No       | `None`        | Database host. Do not required for sqlite.                                                                                                            |
 | `UNLOCK_DATABASE_PORT`       | No       | `None`        | Database port. Do not required for sqlite.                                                                                                            |
 | `UNLOCK_DATABASE_NAME`       | No       | `db.sqlite3`  | Database name. For sqlite specify the filename relative to the project root.                                                                          |
