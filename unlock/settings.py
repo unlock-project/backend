@@ -14,7 +14,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 
-load_dotenv('unlock.env')
+load_dotenv('config.env')
 
 EMAIL_HOST = os.getenv('UNLOCK_EMAIL_HOST')
 
@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get('UNLOCK_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('UNLOCK_DEBUG', 'false').lower().strip(' "\'') == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('UNLOCK_ALLOWED_HOSTS').split(' ')
 
 
 # Application definition
