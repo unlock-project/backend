@@ -14,7 +14,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 
-load_dotenv('config.env')
+load_dotenv('../config.env')
 
 EMAIL_HOST = os.getenv('UNLOCK_EMAIL_HOST')
 
@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get('UNLOCK_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('UNLOCK_DEBUG', 'false').lower().strip(' "\'') == 'true'
 
-ALLOWED_HOSTS = os.getenv('UNLOCK_ALLOWED_HOSTS').split(' ')
+ALLOWED_HOSTS = os.getenv('UNLOCK_ALLOWED_HOSTS', '').split(' ')
 
 
 # Application definition
@@ -86,7 +86,7 @@ WSGI_APPLICATION = 'unlock.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASE_ENGINE = 'django.db.backends.sqlite3'
-DATABASE_NAME = BASE_DIR / os.getenv('UNLOCK_DATABASE_NAME', 'db')
+DATABASE_NAME = BASE_DIR / os.getenv('UNLOCK_DATABASE_NAME', 'db.sqlite3')
 
 if os.getenv('UNLOCK_DATABASE') == 'postgres':
     DATABASE_ENGINE = 'django.db.backends.postgresql_psycopg2'
