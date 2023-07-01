@@ -14,9 +14,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 
-load_dotenv("unlock.env")
+load_dotenv('unlock.env')
 
-EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_HOST = os.getenv('UNLOCK_EMAIL_HOST')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,10 +26,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get('UNLOCK_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'false').lower().strip(" \"'") == 'true'
+DEBUG = os.getenv('UNLOCK_DEBUG', 'false').lower().strip(' "\'') == 'true'
 
 ALLOWED_HOSTS = []
 
@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    ''
     'users_app',
     'bot_app',
     'events_app',
