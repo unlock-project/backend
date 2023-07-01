@@ -11,10 +11,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 import os
 
-load_dotenv(find_dotenv())
+load_dotenv("unlock.env")
 
 EMAIL_HOST = os.getenv("EMAIL_HOST")
 
