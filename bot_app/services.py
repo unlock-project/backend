@@ -43,7 +43,7 @@ def publish_registry(registry: Registry):
         options.append(event.bot_text)
 
     data = {
-        "event_id": registry.event.id,
+        "event_id": registry.event.id if registry.event is not None else None,
         "text": registry.text,
         "options": options,
     }

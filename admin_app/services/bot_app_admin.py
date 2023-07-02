@@ -10,11 +10,12 @@ def make_published(modeladmin, request, queryset):
     for obj in queryset:
         model = obj.get_real_instance_class()
         if model is Message:
-            broadcast_message(obj)
+
+            broadcast_message(obj.get_real_instance())
         elif model is Vote:
-            publish_vote(obj)
+            publish_vote(obj.get_real_instance())
         elif model is Registry:
-            publish_registry(obj)
+            publish_registry(obj.get_real_instance())
 
     queryset.update(activated=True)
 
