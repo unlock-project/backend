@@ -7,17 +7,17 @@ from django.core import serializers
 
 
 def broadcast_message(message: Message):
-    service = settings.BOT_URL+"/message/publish"
+    service = settings.BOT_URL + "/message/publish"
     data = {
-            "message_id": message.id,
-            "message_text": message.text,
-        }
+        "message_id": message.id,
+        "message_text": message.text,
+    }
     response = requests.post(service, data=json.dumps(data))
     return response.json()
 
 
 def publish_vote(vote: Vote):
-    service = settings.BOT_URL+"/vote/publish"
+    service = settings.BOT_URL + "/vote/publish"
     options = VoteOption.objects.filter(voting__id=vote.id)
     options_serial = []
     for option in options:
@@ -27,16 +27,16 @@ def publish_vote(vote: Vote):
         })
 
     data = {
-            "vote_id": vote.id,
-            "vote_text": vote.text,
-            "options": options,
-        }
+        "vote_id": vote.id,
+        "vote_text": vote.text,
+        "options": options,
+    }
     response = requests.post(service, data=json.dumps(data))
     return response.json()
 
 
 def publish_registry(registry: Registry):
-    service = settings.BOT_URL+"/registry/publish"
+    service = settings.BOT_URL + "/registry/publish"
     events = RegistryEvent.objects.filter(registry_id=registry.id)
     options = []
     for event in events:
@@ -49,4 +49,8 @@ def publish_registry(registry: Registry):
     }
 
 
-
+def checkinitdata(_auth: str) -> dict:
+    service = settings.BOT_URL
+    response = requests.get(service + '/user/validate', params={'_auth': _auth})
+    result = json.loads(response.content)
+    return result

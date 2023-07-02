@@ -31,7 +31,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["cdm.sumjest.ru", "localhost", "127.0.0.1"]
+
+CSRF_TRUSTED_ORIGINS = ['https://cdm.sumjest.ru']
 
 
 # Application definition
@@ -138,4 +140,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTHENTICATION_BACKENDS=['django.contrib.auth.backends.ModelBackend']
 AUTH_USER_MODEL = 'users_app.User'
 
-BOT_URL = "http://127.0.0.1:8000/"
+BOT_URL = "https://unlock.sumjest.ru/api"
