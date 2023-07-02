@@ -16,6 +16,10 @@ class Broadcast(PolymorphicModel):
         return f"{str(self.date)} {self.name}"
 
 
+class Message(Broadcast):
+    pass
+
+
 class Question(Broadcast):
     text = models.TextField(max_length=400)
 
@@ -49,6 +53,10 @@ class RegistryEvent(models.Model):
     count = models.IntegerField(default=0)
     max = models.IntegerField(null=True, blank=True)
     registry = models.ForeignKey(Registry, related_name='options', on_delete=models.CASCADE, null=False)
+
+    @property
+    def bot_text(self):
+        return f"{self.text} ({self.count}/{self.max})"
 
     def __str__(self):
         text = self.text

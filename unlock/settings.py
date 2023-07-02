@@ -40,10 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'polymorphic',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    ''
     'users_app',
     'bot_app',
     'events_app',
@@ -137,3 +137,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS=['django.contrib.auth.backends.ModelBackend']
 AUTH_USER_MODEL = 'users_app.User'
+
+BOT_URL = "http://127.0.0.1:8000/"
