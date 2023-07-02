@@ -16,6 +16,8 @@ def make_published(modeladmin, request, queryset):
         elif model is Registry:
             publish_registry(obj)
 
+    queryset.update(activated=True)
+
 
 class BroadcastChildAdmin(PolymorphicChildModelAdmin):
     base_model = Broadcast
