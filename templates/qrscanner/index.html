@@ -376,7 +376,7 @@
                 webViewStatus.classList.contains('status_need')
             ) {
                 webViewStatus.classList.remove('status_need');
-                DemoApp.apiRequest('checkInitData', {}, function(result) {
+                DemoApp.apiRequest('checkinitdata', {}, function(result) {
                     if (result.valid) {
                         webViewStatus.textContent = 'Hash is correct (async)';
                         webViewStatus.className = 'ok';
@@ -514,10 +514,10 @@
             // YOU CAN USE YOUR OWN REQUESTS TO YOUR OWN BACKEND
             // CHANGE THIS CODE TO YOUR OWN
             const authData = DemoApp.initData || '';
-            fetch('/api/bot/' + method, {
+            fetch('/bot/api/' + method, {
                 method: 'POST',
                 body: JSON.stringify(Object.assign(data, {
-                    _auth: authData,
+                    auth: authData,
                 })),
                 credentials: 'include',
                 headers: {

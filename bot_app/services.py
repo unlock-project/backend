@@ -51,6 +51,6 @@ def publish_registry(registry: Registry):
 
 def checkinitdata(_auth: str) -> dict:
     service = settings.BOT_URL
-    response = requests.get(service + '/user/validate', params={'_auth': _auth})
+    response = requests.get(service + '/user/validate', params={'auth': _auth})
     result = json.loads(response.content)
     return result
