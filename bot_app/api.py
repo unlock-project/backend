@@ -3,7 +3,7 @@ from ninja import NinjaAPI, Schema, Field
 from django.conf import settings
 from .services import checkinitdata
 
-api = NinjaAPI()
+api = NinjaAPI(urls_namespace='botapi')
 
 
 class CheckInitDataRequest(Schema):
