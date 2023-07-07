@@ -11,27 +11,25 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 import os
 
-load_dotenv()
+load_dotenv(find_dotenv())
 
 EMAIL_HOST = os.getenv("EMAIL_HOST")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
-
+SECRET_KEY = os.environ.get('UNLOCK_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv('UNLOCK_DEBUG', 'false').lower().strip(' "\'') == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('UNLOCK_ALLOWED_HOSTS', '').split(' ')
 
 
 # Application definition
@@ -40,10 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'polymorphic',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    ''
     'users_app',
     'bot_app',
     'events_app',
@@ -137,3 +135,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS=['django.contrib.auth.backends.ModelBackend']
 AUTH_USER_MODEL = 'users_app.User'
+
+BOT_URL = "https://unlock.sumjest.ru/api"
