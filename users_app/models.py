@@ -29,3 +29,4 @@ class User(AbstractUser):
     @staticmethod
     def all_users():
         return User.objects.all()
+
