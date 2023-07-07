@@ -1,4 +1,6 @@
 import json
+import os
+
 from microservice_request.services import ConnectionService
 import requests
 from django.conf import settings

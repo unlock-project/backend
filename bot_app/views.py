@@ -1,10 +1,11 @@
 import json
-from django.shortcuts import render
-from django.conf import settings
+
 import requests
-from django.http import HttpResponse, JsonResponse, Http404
-from django.views.decorators.csrf import csrf_exempt
-from .services import checkinitdata
+from django.conf import settings
+from django.contrib.auth.decorators import user_passes_test
+from django.http import JsonResponse, Http404
+from django.shortcuts import render
+from .models import Error
 
 
 def test(request):
@@ -17,3 +18,15 @@ def test(request):
 
 def qrscanner_page(request):
     return render(request, "qrscanner/index.html")
+
+
+def has_access_to_traceback(user) -> bool:
+    #  add there permissions checking (function should return bool)
+    return user.is_staff
+
+
+@user_passes_test(has_access_to_traceback)
+def error_page(request, error_id):
+    if Error.objects.filter(id=error_id).exists():
+        return render(request, f"tracebacks/error{error_id}.html")
+    raise Http404()
