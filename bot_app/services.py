@@ -1,9 +1,9 @@
 import json
-from microservice_request.services import ConnectionService
+
 import requests
 from django.conf import settings
+
 from .models import Message, Vote, VoteOption, Registry, RegistryEvent
-from django.core import serializers
 
 
 def broadcast_message(message: Message):
