@@ -1,12 +1,13 @@
 import requests
+from django.conf import settings
 from django.core.handlers.wsgi import WSGIRequest
 from ninja import NinjaAPI, Schema, Field, UploadedFile, File, Form
-from django.conf import settings
-from ninja.errors import ValidationError
+
 from .models import Error
 from .services import checkinitdata
 
 api = NinjaAPI(urls_namespace='botapi')
+
 
 class CheckInitDataRequest(Schema):
     auth: str = Field(...)
