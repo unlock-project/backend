@@ -48,5 +48,8 @@ def publish_registry(registry: Registry):
         "options": options,
     }
 
+    response = requests.post(service, data=json.dumps(data))
+    return response.json()
 
 
+Ц
