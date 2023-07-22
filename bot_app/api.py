@@ -8,7 +8,9 @@ from ninja import NinjaAPI, Schema, Field, File, Form, UploadedFile
 from ninja.responses import Response
 
 from .models import Error
-from .services import checkinitdata
+from .services import checkinitdata, sendmessage
+
+from users_app.models import User
 
 api = NinjaAPI(urls_namespace='botapi')
 
@@ -48,6 +50,12 @@ class ExceptionRequest(Schema):
 class LogsResponse(Schema):
     logs: List[str] = Field(..., example=['log-2023-07-16', 'log-2023-07-14'])
 
+class QRRequest(Schema):
+    auth: str = Field(...)
+
+class QRResponse(Schema):
+    qr_data: str = Field(...)
+
 @api.post("/checkinitdata", response=CheckInitDataResponse)
 def checkinitdata_request(request, data: CheckInitDataRequest):
     response = checkinitdata(data.auth)
@@ -66,8 +74,17 @@ def scanned_request(request, data: ScannedRequest):
         return 400, ErrorResponse(reason=ex.args)
     # scanned qr code
     qr_data = data.qr_data
+    try:
+        participant = User.objects.get(qr=qr_data)
+    except Exception as ex:
+        return 400, ErrorResponse(reason="User with this qr_data not found")
     # CHECK IF USER IS ORGANIZER
     # DO MAGIC
+
+
+
+    sendmessage(participant.id, "Вас отметили")
+
     return 200, ScannedResponse(user_id=user_id, qr_data=qr_data)
 
 
@@ -90,3 +107,25 @@ def logs_request(request: WSGIRequest):
     except Exception as ex:
         return 500, ErrorResponse(reason=str(ex.args))
     return 200, LogsResponse(logs=logs)
+
+
+
+
+@api.post("/qr", response={200: QRResponse, 400: ErrorResponse})
+def qr_request(request: WSGIRequest,  data: QRRequest):
+    checked_data = checkinitdata(data.auth)
+    if 'valid' not in checked_data.keys() or not checked_data['valid'] or 'chat_id' not in checked_data.keys():
+        return 400, ErrorResponse(reason="Not valid telegram web app data")
+
+    chat_id = checked_data["chat_id"]
+    try:
+        user_id = requests.get(settings.BOT_URL + '/user/id', params={'chat_id': chat_id}).json()["user_id"]  # User who
+        user = User.objects.get(id=user_id)
+        qr_data = user.qr
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args)
+
+    if not qr_data:
+        return 400, ErrorResponse(reason="No qr data")
+
+    return QRResponse(qr_data=qr_data)

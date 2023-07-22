@@ -41,3 +41,7 @@ def specific_log(request, filename):
         raise Http404()
 
     return HttpResponse(response.content, status=200, content_type="text/plain")
+
+
+def qr_page(request):
+    return render(request, f"qr/index.html")

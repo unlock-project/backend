@@ -1,0 +1,531 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Error report</title>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min.js"></script>
+
+        <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+        <style>
+            a {
+                cursor: pointer;
+            }
+
+            .codebox {
+                font-family: monospace;
+            }
+
+            .codebox .line.current {
+                background: rgba(0,0,255,.1);
+            }
+
+            .codebox .lineno {
+                text-align: right;
+                display: inline-block;
+                width: 100px;
+                opacity: .5;
+            }
+
+            .codebox .code {
+                white-space: pre;
+            }
+
+            .object-link {
+                font-family: monospace;
+                white-space: pre;
+            }
+			
+			.container {
+				margin-left: 20px;
+			
+			}
+        </style>
+    </head>
+
+    
+
+    
+
+    <body>
+        <div class="container">
+            <h3>Error report</h3>
+            <dl>
+                <dt>Timestamp</dt>
+                <dd>2023-07-22 21:58:28.774655</dd>
+            </dl>
+
+            <h3>Exception</h3>
+            
+        
+                <a class="object-link" data-toggle="collapse" data-target="#1-content">Exception(&#39;test&#39;)</a>
+                <div id="1-content" class="collapse">
+                    
+        
+            <table class="table">
+                    <tr>
+                        <td><code>args</code></td>
+                        <td><span class="badge">tuple</span></td>
+                        <td width="100%">[too deep]</td>
+                    </tr>
+            </table>
+    
+                </div>
+    
+
+            <h3>Traceback</h3>
+                
+                <p>
+                    <i class="icon-file"></i> <code>C:\Users\Roman\PycharmProjects\unlockbot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py : 256</code>
+
+
+                    <div class="row">
+                        <div class="col-lg-20">
+
+                            <div class="codebox">
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            250
+                                        </span>
+                                        <span class="code">
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            251
+                                        </span>
+                                        <span class="code">        try:
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            252
+                                        </span>
+                                        <span class="code">            if update.message:
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            253
+                                        </span>
+                                        <span class="code">                types.Message.set_current(update.message)
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            254
+                                        </span>
+                                        <span class="code">                types.User.set_current(update.message.from_user)
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            255
+                                        </span>
+                                        <span class="code">                types.Chat.set_current(update.message.chat)
+</span>
+                                    </div>
+                                    <div class="line current">
+                                        <span class="lineno">
+                                            256
+                                        </span>
+                                        <span class="code">                return await self.message_handlers.notify(update.message)
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            257
+                                        </span>
+                                        <span class="code">            if update.edited_message:
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            258
+                                        </span>
+                                        <span class="code">                types.Message.set_current(update.edited_message)
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            259
+                                        </span>
+                                        <span class="code">                types.User.set_current(update.edited_message.from_user)
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            260
+                                        </span>
+                                        <span class="code">                types.Chat.set_current(update.edited_message.chat)
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            261
+                                        </span>
+                                        <span class="code">                return await self.edited_message_handlers.notify(update.edited_message)
+</span>
+                                    </div>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-2">
+                            <a class="btn btn-default" data-toggle="collapse" data-target="#3-locals">
+                                <i class="icon-list-ul"></i> Locals
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-1">
+                        </div>
+                        <div>
+                            <div id="3-locals" class="collapse">
+                                <h4>Locals</h4>
+                                
+        
+            <table class="table">
+                    <tr>
+                        <td><code>self</code></td>
+                        <td><span class="badge">Dispatcher</span></td>
+                        <td width="100%">
+        
+                <a class="object-link" data-toggle="collapse" data-target="#5-content">&lt;aiogram.dispatcher.dispatcher.Dispatcher object at 0x0000017F0FBDA1A0&gt;</a>
+                <div id="5-content" class="collapse">
+                    [too deep]
+                </div>
+    </td>
+                    </tr>
+                    <tr>
+                        <td><code>update</code></td>
+                        <td><span class="badge">Update</span></td>
+                        <td width="100%">
+        
+                <a class="object-link" data-toggle="collapse" data-target="#6-content">&lt;Update {&#34;update_id&#34;: 22831342, &#34;message&#34;: {&#34;message_id&#34;: 2654, &#34;from&#34;: {&#34;id&#34;: 313961073, &#34;is_bot&#34;: false, &#34;first_name&#34;: &#34;Roma&#34;, &#34;username&#34;: &#34;romaaaka&#34;, &#34;language_code&#34;: &#34;ru&#34;}, &#34;chat&#34;: {&#34;id&#34;: 313961073, &#34;first_name&#34;: &#34;Roma&#34;, &#34;username&#34;: &#34;romaaaka&#34;, &#34;type&#34;: &#34;private&#34;}, &#34;date&#34;: 1690063108, &#34;text&#34;: &#34;/raise test&#34;, &#34;entities&#34;: [{&#34;type&#34;: &#34;bot_command&#34;, &#34;offset&#34;: 0, &#34;length&#34;: 6}]}}&gt;</a>
+                <div id="6-content" class="collapse">
+                    [too deep]
+                </div>
+    </td>
+                    </tr>
+                    <tr>
+                        <td><code>e</code></td>
+                        <td><span class="badge">Exception</span></td>
+                        <td width="100%">
+        
+                <a class="object-link" data-toggle="collapse" data-target="#7-content">Exception(&#39;test&#39;)</a>
+                <div id="7-content" class="collapse">
+                    [too deep]
+                </div>
+    </td>
+                    </tr>
+            </table>
+    
+                            </div>
+                        </div>
+                    </div>
+                </p>
+                
+                <p>
+                    <i class="icon-file"></i> <code>C:\Users\Roman\PycharmProjects\unlockbot\venv\lib\site-packages\aiogram\dispatcher\handler.py : 116</code>
+
+
+                    <div class="row">
+                        <div class="col-lg-20">
+
+                            <div class="codebox">
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            110
+                                        </span>
+                                        <span class="code">                else:
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            111
+                                        </span>
+                                        <span class="code">                    ctx_token = current_handler.set(handler_obj.handler)
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            112
+                                        </span>
+                                        <span class="code">                    try:
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            113
+                                        </span>
+                                        <span class="code">                        if self.middleware_key:
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            114
+                                        </span>
+                                        <span class="code">                            await self.dispatcher.middleware.trigger(f&#34;process_{self.middleware_key}&#34;, args + (data,))
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            115
+                                        </span>
+                                        <span class="code">                        partial_data = _check_spec(handler_obj.spec, data)
+</span>
+                                    </div>
+                                    <div class="line current">
+                                        <span class="lineno">
+                                            116
+                                        </span>
+                                        <span class="code">                        response = await handler_obj.handler(*args, **partial_data)
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            117
+                                        </span>
+                                        <span class="code">                        if response is not None:
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            118
+                                        </span>
+                                        <span class="code">                            results.append(response)
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            119
+                                        </span>
+                                        <span class="code">                        if self.once:
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            120
+                                        </span>
+                                        <span class="code">                            break
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            121
+                                        </span>
+                                        <span class="code">                    except SkipHandler:
+</span>
+                                    </div>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-2">
+                            <a class="btn btn-default" data-toggle="collapse" data-target="#8-locals">
+                                <i class="icon-list-ul"></i> Locals
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-1">
+                        </div>
+                        <div>
+                            <div id="8-locals" class="collapse">
+                                <h4>Locals</h4>
+                                
+        
+            <table class="table">
+                    <tr>
+                        <td><code>self</code></td>
+                        <td><span class="badge">Handler</span></td>
+                        <td width="100%">
+        
+                <a class="object-link" data-toggle="collapse" data-target="#10-content">&lt;aiogram.dispatcher.handler.Handler object at 0x0000017F0FBDA6B0&gt;</a>
+                <div id="10-content" class="collapse">
+                    [too deep]
+                </div>
+    </td>
+                    </tr>
+                    <tr>
+                        <td><code>args</code></td>
+                        <td><span class="badge">tuple</span></td>
+                        <td width="100%">
+        
+                <code> (&lt;Message {&#34;message_id&#34;: 2654, &#34;from&#34;: {&#34;id&#34;: 313961073, &#34;is_bot&#34;: false, &#34;first_name&#34;: &#34;Roma&#34;, &#34;username&#34;: &#34;romaaaka&#34;, &#34;language_code&#34;: &#34;ru&#34;}, &#34;chat&#34;: {&#34;id&#34;: 313961073, &#34;first_name&#34;: &#34;Roma&#34;, &#34;username&#34;: &#34;romaaaka&#34;, &#34;type&#34;: &#34;private&#34;}, &#34;date&#34;: 1690063108, &#34;text&#34;: &#34;/raise test&#34;, &#34;entities&#34;: [{&#34;type&#34;: &#34;bot_command&#34;, &#34;offset&#34;: 0, &#34;length&#34;: 6}]}&gt;,) </code>
+    </td>
+                    </tr>
+                    <tr>
+                        <td><code>check_filters</code></td>
+                        <td><span class="badge">function</span></td>
+                        <td width="100%">
+        
+                <a class="object-link" data-toggle="collapse" data-target="#12-content">&lt;function check_filters at 0x0000017F0E9AB7F0&gt;</a>
+                <div id="12-content" class="collapse">
+                    [too deep]
+                </div>
+    </td>
+                    </tr>
+                    <tr>
+                        <td><code>FilterNotPassed</code></td>
+                        <td><span class="badge">type</span></td>
+                        <td width="100%">
+        
+                <a class="object-link" data-toggle="collapse" data-target="#13-content">&lt;class &#39;aiogram.dispatcher.filters.filters.FilterNotPassed&#39;&gt;</a>
+                <div id="13-content" class="collapse">
+                    [too deep]
+                </div>
+    </td>
+                    </tr>
+                    <tr>
+                        <td><code>results</code></td>
+                        <td><span class="badge">list</span></td>
+                        <td width="100%">
+        
+            <span class="badge">0 items</span>
+            <table class="table">
+            </table>
+    </td>
+                    </tr>
+                    <tr>
+                        <td><code>data</code></td>
+                        <td><span class="badge">dict</span></td>
+                        <td width="100%">
+        
+            <table class="table">
+                    <tr>
+                        <td><code>state</code></td>
+                        <td><span class="badge">FSMContext</span></td>
+                        <td width="100%">[too deep]</td>
+                    </tr>
+                    <tr>
+                        <td><code>raw_state</code></td>
+                        <td><span class="badge">NoneType</span></td>
+                        <td width="100%">[too deep]</td>
+                    </tr>
+                    <tr>
+                        <td><code>command</code></td>
+                        <td><span class="badge">CommandObj</span></td>
+                        <td width="100%">[too deep]</td>
+                    </tr>
+            </table>
+    </td>
+                    </tr>
+                    <tr>
+                        <td><code>handler_obj</code></td>
+                        <td><span class="badge">HandlerObj</span></td>
+                        <td width="100%">
+        
+                <a class="object-link" data-toggle="collapse" data-target="#16-content">Handler.HandlerObj(handler=&lt;function raise_error at 0x0000017F0FD2D990&gt;, spec=FullArgSpec(args=[&#39;message&#39;], varargs=None, varkw=None, defaults=None, kwonlyargs=[], kwonlydefaults=None, annotations={&#39;message&#39;: &lt;class &#39;aiogram.types.message.Message&#39;&gt;}), filters=[FilterObj(filter=&lt;aiogram.dispatcher.filters.builtin.StateFilter object at 0x0000017F0FD19B40&gt;, kwargs={}, is_async=True), FilterObj(filter=&lt;aiogram.dispatcher.filters.builtin.ContentTypeFilter object at 0x0000017F0FD19BA0&gt;, kwargs={}, is_async=True), FilterObj(filter=&lt;aiogram.dispatcher.filters.builtin.Command object at 0x0000017F0FD19C00&gt;, kwargs={}, is_async=True), FilterObj(filter=&lt;utils.my_filters.IsAdmin object at 0x0000017F0FC0DD20&gt;, kwargs={}, is_async=True)])</a>
+                <div id="16-content" class="collapse">
+                    [too deep]
+                </div>
+    </td>
+                    </tr>
+                    <tr>
+                        <td><code>ctx_token</code></td>
+                        <td><span class="badge">Token</span></td>
+                        <td width="100%">
+        
+                <code> &lt;Token used var=&lt;ContextVar name=&#39;current_handler&#39; at 0x0000017F0E9B2F20&gt; at 0x0000017F0E4C8D00&gt; </code>
+    </td>
+                    </tr>
+                    <tr>
+                        <td><code>partial_data</code></td>
+                        <td><span class="badge">dict</span></td>
+                        <td width="100%">
+        
+            <table class="table">
+            </table>
+    </td>
+                    </tr>
+            </table>
+    
+                            </div>
+                        </div>
+                    </div>
+                </p>
+                
+                <p>
+                    <i class="icon-file"></i> <code>C:\Users\Roman\PycharmProjects\unlockbot\handlers\message_handler.py : 53</code>
+
+
+                    <div class="row">
+                        <div class="col-lg-20">
+
+                            <div class="codebox">
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            50
+                                        </span>
+                                        <span class="code">@dp.message_handler(IsAdmin(), commands=&#34;raise&#34;)
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            51
+                                        </span>
+                                        <span class="code">async def raise_error(message: types.Message):
+</span>
+                                    </div>
+                                    <div class="line ">
+                                        <span class="lineno">
+                                            52
+                                        </span>
+                                        <span class="code">    args = message.get_args()
+</span>
+                                    </div>
+                                    <div class="line current">
+                                        <span class="lineno">
+                                            53
+                                        </span>
+                                        <span class="code">    raise Exception(args)
+</span>
+                                    </div>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-2">
+                            <a class="btn btn-default" data-toggle="collapse" data-target="#19-locals">
+                                <i class="icon-list-ul"></i> Locals
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-1">
+                        </div>
+                        <div>
+                            <div id="19-locals" class="collapse">
+                                <h4>Locals</h4>
+                                
+        
+            <table class="table">
+                    <tr>
+                        <td><code>message</code></td>
+                        <td><span class="badge">Message</span></td>
+                        <td width="100%">
+        
+                <a class="object-link" data-toggle="collapse" data-target="#21-content">&lt;Message {&#34;message_id&#34;: 2654, &#34;from&#34;: {&#34;id&#34;: 313961073, &#34;is_bot&#34;: false, &#34;first_name&#34;: &#34;Roma&#34;, &#34;username&#34;: &#34;romaaaka&#34;, &#34;language_code&#34;: &#34;ru&#34;}, &#34;chat&#34;: {&#34;id&#34;: 313961073, &#34;first_name&#34;: &#34;Roma&#34;, &#34;username&#34;: &#34;romaaaka&#34;, &#34;type&#34;: &#34;private&#34;}, &#34;date&#34;: 1690063108, &#34;text&#34;: &#34;/raise test&#34;, &#34;entities&#34;: [{&#34;type&#34;: &#34;bot_command&#34;, &#34;offset&#34;: 0, &#34;length&#34;: 6}]}&gt;</a>
+                <div id="21-content" class="collapse">
+                    [too deep]
+                </div>
+    </td>
+                    </tr>
+                    <tr>
+                        <td><code>args</code></td>
+                        <td><span class="badge">str</span></td>
+                        <td width="100%">
+        
+            <code>&#39;test&#39;</code>
+    </td>
+                    </tr>
+            </table>
+    
+                            </div>
+                        </div>
+                    </div>
+                </p>
+        </div>
+    </body>
+</html>
