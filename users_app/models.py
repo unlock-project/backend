@@ -19,6 +19,7 @@ class User(AbstractUser):
     team = models.ForeignKey(to=Team, null=True, blank=True, on_delete=models.DO_NOTHING)
     balance = models.IntegerField(default=0)
     telegram = models.CharField(max_length=100, null=True, blank=True)
+    qr = models.CharField(max_length=100, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         super().save()
