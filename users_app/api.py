@@ -11,12 +11,11 @@ class BotRegisterSchema(Schema):
 class UserSchema(ModelSchema):
     class Config:
         model = User
-        model_fields = ['id', 'first_name', 'last_name', 'telegram']
+        model_fields = ['id', 'first_name', 'last_name', 'telegram', 'qr', 'team']
 
 
-@api.post("/register", response=UserSchema)
+@api.post("/register/user", response=UserSchema)
 def register(request, data: BotRegisterSchema):
     telegram = data.username
     user = User.objects.get(telegram=telegram)
-
     return user
