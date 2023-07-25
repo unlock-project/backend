@@ -25,7 +25,7 @@ function showQR(qr_data){
         height: 250,
         type: "svg",
         data: qr_data,
-        image: "{% static 'qr/images/unlock_logo1.svg' %}",
+        image: unlock_logo,
         dotsOptions: {
             color: "#000000",
             type: "rounded"
@@ -37,7 +37,7 @@ function showQR(qr_data){
         imageOptions: {
             crossOrigin: "anonymous",
             margin: 1,
-            imageSize: 0.35
+            imageSize: 0.36
         }
     });
     canvas = document.getElementById("qr_code")

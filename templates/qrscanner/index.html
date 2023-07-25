@@ -12,6 +12,7 @@
     <meta name="robots" content="noindex,nofollow" />
     <script src="https://telegram.org/js/telegram-web-app.js?1"></script>
     <link rel="stylesheet" href={% static 'webapp/css/style.css' %}>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@mdi/font@6.9.96/css/materialdesignicons.min.css">
     <script>
         function setThemeClass() {
             document.documentElement.className = Telegram.WebApp.colorScheme;
@@ -24,7 +25,10 @@
 <body class="">
 
 <section id="top_sect" class="second">
-    <button id="main_btn" onclick="showScanQrPopup();">Scan QR code</button>
+    <button id="main_btn" onclick="showScanQrPopup();">
+        <span class="mdi mdi-qrcode-scan"></span>
+        Scan QR code
+    </button>
 </section>
 <section>
 

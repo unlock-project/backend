@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% if not user.is_authenticated %}
+
+{% else %}
+<div class="row">
+<div class="col-md-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">USER ID</h4>
+                    <div class="form-group">
+                      <label for="inputChatIdData">User chat_id</label>
+                        <div class="input-group">
+                      <input type="text" class="form-control" id="inputChatIdData" placeholder="Chat id">
+                      <div class="input-group-append">
+                        <button class="btn btn-primary mr-2" onclick="getUserId()">Request</button>
+                      </div>
+                    </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="userIdLabel">User id</label>
+                      <input type="text" class="form-control" id="userIdLabel" placeholder="User id" readonly>
+                    </div>
+                </div>
+              </div>
+            </div>
+<div class="col-md-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">USER CHAT ID</h4>
+                    <div class="form-group">
+                      <label for="inputIdData">User id</label>
+                        <div class="input-group">
+                      <input type="text" class="form-control" id="inputIdData" placeholder="User id">
+                      <div class="input-group-append">
+                        <button class="btn btn-primary mr-2" onclick="getChatId()">Request</button>
+                      </div>
+                    </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="userChatIdLabel">Chat id</label>
+                      <input type="text" class="form-control" id="userChatIdLabel" placeholder="Chat id" readonly>
+                    </div>
+
+                </div>
+              </div>
+            </div>
+        </div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+    <script>
+    $('#userids-tab').addClass('active')
+    function getUserId(){
+        get('/bot/api/user/id', {'chat_id': $('#inputChatIdData').val()}).then(data => {
+            $('#userIdLabel').val(data.user_id);
+        })
+    }
+    function getChatId(){
+        get('/bot/api/user/chat-id', {'user_id': $('#inputIdData').val()}).then(data => {
+            $('#userChatIdLabel').val(data.chat_id);
+        })
+    }
+
+    </script>
+{% endblock %}
