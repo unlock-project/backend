@@ -30,6 +30,25 @@ async function get(url, params)
   return result
 }
 
+async function getText(url, params)
+{
+  const response = await fetchWithTimeout(url + '?' + new URLSearchParams(params), {
+    method: 'GET', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-store',
+  });
+  var result;
+  await response.text().then(data => {
+      result = data;
+  })
+  if (!response.ok){
+      js_data = JSON.parse(text);
+      createAlert("Ошибка: " + js_data.reason, 'warning');
+      return;
+  }
+  return result
+}
+
 async function post(url, body)
 {
   const response = await fetchWithTimeout(url, {
