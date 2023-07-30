@@ -1,7 +1,11 @@
-from django.contrib import admin
 from django.urls import path
-from .views import test
+
+from .api import api as bot_api
+from .views import qrscanner_page, error_page, test
 
 urlpatterns = [
+    path('scanner', qrscanner_page),
+    path('error/<int:error_id>/', error_page),
+    path('api/', bot_api.urls),
     path('test/', test),
 ]

@@ -17,7 +17,7 @@ def broadcast_message(message: Message):
 
 
 def publish_vote(vote: Vote):
-    service = settings.BOT_URL+"/vote/publish"
+    service = settings.BOT_URL + "/vote/publish"
     options = VoteOption.objects.filter(voting__id=vote.id)
     options_serial = []
     for option in options:
@@ -36,7 +36,7 @@ def publish_vote(vote: Vote):
 
 
 def publish_registry(registry: Registry):
-    service = settings.BOT_URL+"/registry/publish"
+    service = settings.BOT_URL + "/registry/publish"
     events = RegistryEvent.objects.filter(registry_id=registry.id)
     options = []
     for event in events:
@@ -52,4 +52,9 @@ def publish_registry(registry: Registry):
     return response.json()
 
 
-Ц
+
+def checkinitdata(_auth: str) -> dict:
+    service = settings.BOT_URL
+    response = requests.get(service + '/user/validate', params={'auth': _auth})
+    result = json.loads(response.content)
+    return result

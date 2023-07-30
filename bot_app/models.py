@@ -1,7 +1,12 @@
+import os
+
+from django.conf import settings
 from django.db import models
 from events_app.models import Event
 from users_app.models import User, Team
 from polymorphic.models import PolymorphicModel
+from django.db.models.signals import post_delete
+from django.dispatch.dispatcher import receiver
 
 
 # Create your models here.
@@ -22,6 +27,19 @@ class Message(Broadcast):
 
 class Question(Broadcast):
     text = models.TextField(max_length=400)
+
+
+class Error(models.Model):
+    id = models.AutoField(primary_key=True)
+    details = models.TextField()
+    traceback_page = models.URLField()
+
+
+@receiver(post_delete, sender=Error)
+def _error_delete(sender, instance: Error, **kwargs):
+    expected_path = settings.TEMPLATES[0]['DIRS'][0] / "tracebacks" / f"error{instance.id}.html"
+    if expected_path.exists():
+        os.remove(expected_path)
 
 
 class Vote(Broadcast):
