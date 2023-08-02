@@ -12,7 +12,7 @@ class CustomUserAdmin(UserAdmin):
     list_filter = ("username", "telegram", "is_staff", "is_active",)
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        ("Personal info", {"fields": ("first_name", "last_name", "team", "telegram")}),
+        ("Personal info", {"fields": ("first_name", "last_name", "team", "telegram", "qr")}),
         ("Permissions", {"fields": ("is_staff", "is_active", "groups", "user_permissions")}),
 
     )
@@ -20,13 +20,13 @@ class CustomUserAdmin(UserAdmin):
         (None, {
             "classes": ("wide",),
             "fields": (
-                "username", "first_name", "last_name", "telegram", "password1", "password2", "is_staff",
+                "username", "first_name", "last_name", "telegram", "qr", "password1", "password2", "is_staff",
                 "is_active", "groups", "user_permissions"
             )}
          ),
     )
     search_fields = ("username", "telegram")
-    ordering = ("username", )
+    ordering = ("username",)
 
 
 admin.site.register(User, CustomUserAdmin)
