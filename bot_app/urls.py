@@ -1,5 +1,4 @@
 from django.urls import path
-
 from .api import api as bot_api
 from .views import qrscanner_page, error_page, specific_log, qr_page
 

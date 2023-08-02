@@ -22,7 +22,7 @@ class Broadcast(PolymorphicModel):
 
 
 class Message(Broadcast):
-    pass
+    text = models.TextField(max_length=400, blank=True, null=True)
 
 
 class Question(Broadcast):

@@ -6,7 +6,6 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
 from ninja import NinjaAPI, Schema, Field, File, Form, UploadedFile
 from ninja.responses import Response
-
 from .models import Error
 from .services import checkinitdata, sendmessage
 
