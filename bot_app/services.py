@@ -5,7 +5,7 @@ from .models import Message, Question, Vote, VoteOption, Registry, RegistryEvent
 
 
 def broadcast_message(message: Message):
-    service = settings.BOT_URL + "message/publish"
+    service = settings.BOT_URL + "/message/publish"
     data = {
         "message_id": message.id,
         "message_text": message.text,
@@ -15,7 +15,7 @@ def broadcast_message(message: Message):
 
 
 def broadcast_question(question: Question):
-    service = settings.BOT_URL + "question/publish"
+    service = settings.BOT_URL + "/question/publish"
     data = {
         "question_id": question.id,
         "question_text": question.text,
@@ -26,7 +26,7 @@ def broadcast_question(question: Question):
 
 
 def publish_vote(vote: Vote):
-    service = settings.BOT_URL + "vote/publish"
+    service = settings.BOT_URL + "/vote/publish"
     options = VoteOption.objects.filter(voting__id=vote.id)
     options_serial = []
     for option in options:
@@ -46,7 +46,7 @@ def publish_vote(vote: Vote):
 
 
 def publish_registry(registry: Registry):
-    service = settings.BOT_URL + "registration/publish"
+    service = settings.BOT_URL + "/registration/publish"
     events = RegistryEvent.objects.filter(registry_id=registry.id)
     options = []
     for event in events:
@@ -66,7 +66,7 @@ def publish_registry(registry: Registry):
 
 
 def update_registry(registry: Registry):
-    service = settings.BOT_URL + "registration/update"
+    service = settings.BOT_URL + "/registration/update"
     events = RegistryEvent.objects.filter(registry_id=registry.id)
     options = []
     for event in events:
