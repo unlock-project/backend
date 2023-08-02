@@ -178,7 +178,7 @@ def send_msg_request(request: WSGIRequest, data: SendMessageRequest):
     except Exception as ex:
         return 400, ErrorResponse(reason=str(ex))
     return 200, MessageSentResponse(**data)
-@api.post("/qr", response={200: QRResponse, 400: ErrorResponse}, auth=apiauth)
+@api.post("/qr", response={200: QRResponse, 400: ErrorResponse})
 def qr_request(request: WSGIRequest,  data: QRRequest):
     checked_data = checkinitdata(data.auth)
     if 'valid' not in checked_data.keys() or not checked_data['valid'] or 'chat_id' not in checked_data.keys():
@@ -186,7 +186,7 @@ def qr_request(request: WSGIRequest,  data: QRRequest):
 
     chat_id = checked_data["chat_id"]
     try:
-        user_id = requests.get('/user/id', params={'chat_id': chat_id}).json()["user_id"]  # User who
+        user_id = requests.get(settings.BOT_URL + '/user/id', params={'chat_id': chat_id}).json()["user_id"]  # User who
         user = User.objects.get(id=user_id)
         qr_data = user.qr
     except Exception as ex:
