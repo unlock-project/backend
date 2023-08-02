@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block head %}
+    <style>
+    #qr_code{
+        width: 250px;
+        height: 250px;
+        margin: 0 auto;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}
+
+{% else %}
+<div class="row">
+<div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">QR GENERATOR</h4>
+                    <p class="card-description">
+                        Read about QR code contents format <a href="https://github.com/zxing/zxing/wiki/Barcode-Contents" target="_blank">there</a>
+                    </p>
+                    <div class="form-group">
+                      <label for="inputQRData">QR data</label>
+                        <div class="input-group">
+                      <input type="text" class="form-control" id="inputQRData" placeholder="QR data">
+                      <div class="input-group-append">
+                        <button class="btn btn-primary mr-2" onclick="showQR()">Generate</button>
+                      </div>
+                    </div>
+                    </div>
+
+                    <div id="qr_code"></div>
+                    <div class="input-group">
+                        <select class="form-control" id="qr-extension">
+                            <option value="png" selected="">PNG</option>
+                            <option value="jpeg">JPEG</option>
+                            <option value="webp">WEBP</option>
+                            <option value="svg">SVG</option>
+                        </select>
+                        <button class="btn btn-primary mr-2" id="qr-download" onclick="download()">Download</button>
+
+                    </div>
+                </div>
+              </div>
+            </div>
+    </div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+    {% load static %}
+    <script src="{% static 'js/qrgen.js' %}"></script>
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <script>
+    unlock_logo = "{% static 'qr/images/unlock_logo1.svg' %}"
+    $('#qrgenerator-tab').addClass('active')
+    </script>
+{% endblock %}

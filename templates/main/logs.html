@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">LOGS</h4>
+                    <div class="form-group">
+                      <label>Log file</label>
+                      <div class="input-group col-xs-12">
+                        <select class="form-control" id="logFileSelect">
+                            <option>Select log file</option>
+                        </select>
+                        <span class="input-group-append">
+                          <button class="file-upload-browse btn btn-primary" type="button" onclick="downloadLog()">Download</button>
+                        </span>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        function downloadLog(){
+            select = document.getElementById('logFileSelect');
+            selectedIndex = select.selectedIndex;
+            if (selectedIndex === 0){
+                createAlert('Choose specific log file', 'warning');
+                return
+            }
+            logFile = select.options[selectedIndex].text;
+            getText('bot/logs/' + logFile, {}).then(data => {
+                var element = document.createElement('a');
+                element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
+                element.setAttribute('download', logFile + '.log');
+
+                element.style.display = 'none';
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
+            })
+        }
+
+
+        $('#logs-tab').addClass('active')
+        get('/bot/api/logs').then(data => {
+            for (i = 0; i < data.logs.length; i ++){
+                option = document.createElement('option');
+                option.innerText = data.logs[i];
+                document.getElementById('logFileSelect').appendChild(option);
+            }
+        });
+    </script>
+{% endblock %}

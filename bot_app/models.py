@@ -1,4 +1,6 @@
 import os
+import string
+import random
 
 from django.conf import settings
 from django.db import models
@@ -8,6 +10,9 @@ from polymorphic.models import PolymorphicModel
 from django.db.models.signals import post_delete
 from django.dispatch.dispatcher import receiver
 
+
+def generateKey():
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=30))
 
 # Create your models here.
 class Broadcast(PolymorphicModel):
@@ -65,6 +70,8 @@ class Registry(Broadcast):
     text = models.TextField(max_length=500)
     event = models.ForeignKey(Event, on_delete=models.DO_NOTHING, null=True, blank=True)
 
+class Token(models.Model):
+    key = models.TextField(max_length=50, default=generateKey)
 
 class RegistryEvent(models.Model):
     text = models.TextField(max_length=100)

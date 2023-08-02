@@ -95,4 +95,4 @@ def sendmessage(user_id: int, message:str):
     response = requests.post(settings.BOT_URL + '/sendmessage',
                             data=data,
                             headers={"content-type": "application/json", })
-    return response.ok
+    return response

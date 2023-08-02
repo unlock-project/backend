@@ -1,0 +1,7 @@
+.alert_block{
+    position: fixed;
+    right: 10px; 
+    bottom: 0%; 
+    padding: 10px; 
+    min-width: 50%;
+}

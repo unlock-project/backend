@@ -52,7 +52,12 @@ function showScanQrPopup() {
         text: 'Scan personal QR code'
     }, function(text) {
         apiRequest('scanned', {qr_data: text}, function (result) {
-            Telegram.WebApp.showAlert(JSON.stringify(result));
+            if(result && result.user_id){
+                Telegram.WebApp.showAlert(`Вы отметили пользователя. 
+                Пользователь: ${result.first_name} ${result.last_name}.
+                ID: ${result.user_id}`);
+            }
+
         })
 
         return true;

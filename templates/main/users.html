@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block head %}
+    <style>
+    #qr_code{
+        width: 250px;
+        height: 250px;
+        margin: 0 auto;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}
+
+{% else %}
+<div class="row">
+<div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Users</h4>
+                    <p class="card-description">
+                        Do some actions with users
+                    </p>
+                    <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Id</th>
+                          <th>First name</th>
+                          <th>Last name</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for user in users %}
+                        <tr>
+                          <td>{{ user.id }}</td>
+                          <td>{{ user.first_name }}</td>
+                          <td>{{ user.last_name }}</td>
+                          <td>
+                              <button type="button" id="send{{ user.id }}" class="btn btn-success btn-rounded btn-icon" onclick="window.location.href = '/sendmsg?user_id={{ user.id }}'" title="Send message"><i class="mdi mdi-message-arrow-right"></i></button>
+                            <button type="button" id="send{{ user.id }}" class="btn btn-info btn-rounded btn-icon" onclick="window.location.href = '/userids?user_id={{ user.id }}'" title="Chat id"><i class="mdi mdi-identifier"></i></button>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+    </div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+    {% load static %}
+    <script src="{% static 'js/qrgen.js' %}"></script>
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <script>
+    unlock_logo = "{% static 'qr/images/unlock_logo1.svg' %}"
+    $('#users-tab').addClass('active')
+    </script>
+{% endblock %}
