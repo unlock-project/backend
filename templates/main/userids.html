@@ -4,62 +4,70 @@
 
 {% else %}
 <div class="row">
-<div class="col-md-6 grid-margin stretch-card">
+<div class="col-md-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
                   <h4 class="card-title">USER ID</h4>
-                    <div class="form-group">
-                      <label for="inputChatIdData">User chat_id</label>
-                        <div class="input-group">
-                      <input type="text" class="form-control" id="inputChatIdData" placeholder="Chat id">
-                      <div class="input-group-append">
-                        <button class="btn btn-primary mr-2" onclick="getUserId()">Request</button>
-                      </div>
+                <form class="form-inline" id="idRequestCard">
+                    <div id="chat-id-block">
+                        <input type="text" class="form-control mb-2 mr-sm-2" id="inputChatIdData" placeholder="Chat ID">
                     </div>
-                    </div>
-                    <div class="form-group">
-                      <label for="userIdLabel">User id</label>
-                      <input type="text" class="form-control" id="userIdLabel" placeholder="User id" readonly>
-                    </div>
-                </div>
-              </div>
-            </div>
-<div class="col-md-6 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">USER CHAT ID</h4>
-                    <div class="form-group">
-                      <label for="inputIdData">User id</label>
-                        <div class="input-group">
-                      <input type="text" class="form-control" id="inputIdData" placeholder="User id">
-                      <div class="input-group-append">
-                        <button class="btn btn-primary mr-2" onclick="getChatId()">Request</button>
-                      </div>
-                    </div>
-                    </div>
-                    <div class="form-group">
-                      <label for="userChatIdLabel">Chat id</label>
-                      <input type="text" class="form-control" id="userChatIdLabel" placeholder="Chat id" readonly>
-                    </div>
+                    <button type="button" id="swapButton" class="btn btn-outline-secondary btn-rounded btn-icon mb-2 mr-sm-2" onclick="swap()">
+                                            <i class="mdi mdi-swap-horizontal"></i>
+                                          </button>
+                    <div id="user-id-block">
+                        <input type="text" class="form-control mb-2 mr-sm-2" id="inputIdData" placeholder="User ID" readonly>
+                        </div>
+                    <button type="button" class="btn btn-primary mb-2" id="idRequestButton" onclick="getUserId()">Get User ID</button>
 
-                </div>
-              </div>
-            </div>
+</form></div></div></div>
         </div>
 {% endif %}
 {% endblock %}
 {% block scripts %}
     <script>
     $('#userids-tab').addClass('active')
+
+    params = new URLSearchParams(window.location.search)
+    if(params.get('user_id')) {
+        $('#inputIdData').val(params.get('user_id'));
+        swap();
+    }
+    if(params.get('chat_id')) $('#inputChatIdData').val(params.get('chat_id'));
     function getUserId(){
         get('/bot/api/user/id', {'chat_id': $('#inputChatIdData').val()}).then(data => {
-            $('#userIdLabel').val(data.user_id);
+            $('#inputIdData').val(data.user_id);
         })
     }
     function getChatId(){
         get('/bot/api/user/chat-id', {'user_id': $('#inputIdData').val()}).then(data => {
-            $('#userChatIdLabel').val(data.chat_id);
+            $('#inputChatIdData').val(data.chat_id);
         })
+    }
+    function swap(){
+        var idcard = document.getElementById('idRequestCard')
+        var fields = document.querySelectorAll('#idRequestCard div');
+        var left = fields[0]
+        var right = fields[1]
+        var left_input = document.querySelector('#' + left.id + ' input');
+        var right_input = document.querySelector('#' + right.id + ' input');
+        var swapButton = document.getElementById('swapButton')
+        var requestButton = document.getElementById("idRequestButton")
+        if(left.id === "user-id-block"){
+            requestButton.setAttribute('onclick', 'getUserId()');
+            requestButton.innerText = 'Get User ID';
+        }else{
+            requestButton.setAttribute('onclick', 'getChatId()');
+            requestButton.innerText = 'Get Chat ID';
+        }
+
+        left.remove();
+        right.remove();
+        left_input.setAttribute('readonly', '');
+        right_input.removeAttribute('readonly');
+        idcard.insertBefore(right, swapButton);
+        idcard.insertBefore(left, requestButton);
+
     }
 
     </script>

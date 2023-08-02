@@ -31,6 +31,9 @@
 {% block scripts %}
     <script>
     $('#sendmsg-tab').addClass('active')
+    params = new URLSearchParams(window.location.search)
+    if(params.get('user_id')) $('#inputUserId').val(params.get('user_id'));
+    if(params.get('message')) $('#inputMessage').val(params.get('message'));
     function sendMessage(){
         post('/bot/api/user/message', {'user_id': $('#inputUserId').val(), 'message': $('#inputMessage').val()}).then(
             data => {

@@ -6,7 +6,7 @@ from django.contrib.admin.widgets import AdminURLFieldWidget
 from django.forms import widgets, ModelForm
 from django.utils.safestring import mark_safe
 
-from .models import Error
+from .models import Error, Token
 
 
 class PrettyJSONWidget(widgets.Textarea):
@@ -44,3 +44,7 @@ class ErrorAdminForm(ModelForm):
 class ErrorAdmin(admin.ModelAdmin):
     list_display = ["id", ]
     form = ErrorAdminForm
+
+@admin.register(Token)
+class TokenAdmin(admin.ModelAdmin):
+    list_display = ["id", ]

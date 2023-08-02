@@ -34,24 +34,6 @@
         </div>
     <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
         <ul class="navbar-nav navbar-nav-right">
-        <li class="nav-item dropdown mr-1">
-            <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" id="messageDropdown" href="#" data-toggle="dropdown">
-            <i class="mdi mdi-message-text mx-0"></i>
-            <span class="count"></span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="messageDropdown">
-            <p class="mb-0 font-weight-normal float-left dropdown-header">Messages</p>
-            </div>
-        </li>
-        <li class="nav-item dropdown mr-4">
-            <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center notification-dropdown" id="notificationDropdown" href="#" data-toggle="dropdown">
-            <i class="mdi mdi-bell mx-0"></i>
-            <span class="count"></span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="notificationDropdown">
-            <p class="mb-0 font-weight-normal float-left dropdown-header">Notifications</p>
-            </div>
-        </li>
         <li class="nav-item nav-profile dropdown">
             <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
                 <img src="{% static 'images/faces/1.png' %}" alt="profile">
@@ -62,6 +44,12 @@
                 <i class="mdi mdi-account-cog-outline text-primary"></i>
                 Settings
             </a>
+            {% if user.is_staff %}
+            <a class="dropdown-item" href="/admin/">
+                <i class="mdi mdi-shield-account text-primary"></i>
+                Admin
+            </a>
+            {% endif %}
             <a class="dropdown-item" href="{% url 'logout' %}">
                 <i class="mdi mdi-logout text-primary"></i>
                 Logout
@@ -83,6 +71,12 @@
                         <a class="nav-link" href="/">
                         <i class="mdi mdi-home menu-icon"></i>
                         <span class="menu-title">Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" id="users-tab">
+                        <a class="nav-link" href="{% url 'users'%}">
+                        <i class="mdi mdi-account menu-icon"></i>
+                        <span class="menu-title">Users</span>
                         </a>
                     </li>
                     <li class="nav-item" id="qrgenerator-tab">
