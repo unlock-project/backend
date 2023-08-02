@@ -14,18 +14,17 @@ class UserSchema(ModelSchema):
         model = User
         model_fields = ['id', 'first_name', 'last_name', 'telegram', 'qr', 'team']
 
-
+        
 class TeamSchema(ModelSchema):
     class Config:
         model = Team
         model_fields = ['id', 'name', 'balance', 'tutor']
 
 
-@api.post("/register", response=UserSchema)
+@api.post("/register/user", response=UserSchema)
 def register(request, data: BotRegisterSchema):
     telegram = data.username
     user = User.objects.get(telegram=telegram)
-
     return user
 
 

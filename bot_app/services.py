@@ -89,3 +89,10 @@ def checkinitdata(_auth: str) -> dict:
     response = requests.get(service + '/user/validate', params={'auth': _auth})
     result = json.loads(response.content)
     return result
+
+def sendmessage(user_id: int, message:str):
+    data = json.dumps({"user_id": user_id, "message": message})
+    response = requests.post(settings.BOT_URL + '/sendmessage',
+                            data=data,
+                            headers={"content-type": "application/json", })
+    return response.ok
