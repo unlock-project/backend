@@ -21,6 +21,7 @@ class User(AbstractUser):
     telegram = models.CharField(max_length=100, null=True, blank=True)
     qr = models.CharField(max_length=100, unique=True, blank=True)
 
+
     def save(self, *args, **kwargs):
         super().save()
 
