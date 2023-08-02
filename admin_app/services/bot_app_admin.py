@@ -10,8 +10,9 @@ def make_published(modeladmin, request, queryset):
     for obj in queryset:
         model = obj.get_real_instance_class()
         if model is Message:
-
             broadcast_message(obj.get_real_instance())
+        elif model is Question:
+            broadcast_question(obj.get_real_instance())
         elif model is Vote:
             publish_vote(obj.get_real_instance())
         elif model is Registry:
@@ -32,7 +33,7 @@ class BroadcastParentAdmin(PolymorphicParentModelAdmin):
     """ The parent model admin """
     base_model = Broadcast
     list_display = ["id", "name", "activated"]
-    child_models = (Question, Vote, Registry)
+    child_models = (Question, Vote, Registry, Message)
     list_filter = (PolymorphicChildModelFilter,)
     actions = [make_published]
 
@@ -41,4 +42,5 @@ admin.site.register(Question, BroadcastChildAdmin)
 admin.site.register(Vote, )
 admin.site.register(VoteOption, )
 admin.site.register(Registry, )
+admin.site.register(Message, )
 admin.site.register(RegistryEvent, )

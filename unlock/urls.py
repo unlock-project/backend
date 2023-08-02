@@ -21,7 +21,7 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path('', include("front.urls")),
     path('admin/', admin.site.urls),
-    path('api/', include("users_app.urls")),
+    path('api/users/', include("users_app.urls")),
     path('bot/', include("bot_app.urls")),
     path('accounts/', include("django.contrib.auth.urls"))
 ]

@@ -31,7 +31,7 @@ DEBUG = os.getenv('UNLOCK_DEBUG', 'false').lower().strip(' "\'') == 'true'
 
 ALLOWED_HOSTS = os.getenv('UNLOCK_ALLOWED_HOSTS', '').split(' ')
 
-CSRF_TRUSTED_ORIGINS = os.getenv('UNLOCK_CSRF_TRUSTED_ORIGINS', '').split(' ')
+# CSRF_TRUSTED_ORIGINS = os.getenv('UNLOCK_CSRF_TRUSTED_ORIGINS', '').split(' ')
 
 
 # ADD UNLOCK_CSRF_TRUSTED_ORIGINS, UNLOCK_BOT_URL TO ENV VARS
