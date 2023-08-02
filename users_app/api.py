@@ -21,7 +21,7 @@ class TeamSchema(ModelSchema):
         model_fields = ['id', 'name', 'balance', 'tutor']
 
 
-@api.post("/register/user", response=UserSchema)
+@api.post("/register", response=UserSchema)
 def register(request, data: BotRegisterSchema):
     telegram = data.username
     user = User.objects.get(telegram=telegram)

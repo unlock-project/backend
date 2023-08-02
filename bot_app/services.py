@@ -30,7 +30,7 @@ def publish_vote(vote: Vote):
     options = VoteOption.objects.filter(voting__id=vote.id)
     options_serial = []
     for option in options:
-        options.append({
+        options_serial.append({
             "option_id": option.id,
             "option_text": option.text,
         })
