@@ -10,7 +10,7 @@ def broadcast_message(message: Message):
         "message_id": message.id,
         "message_text": message.text,
     }
-    response = requests.post(service, data=data)
+    response = requests.post(service, json=data)
     return response
 
 
@@ -21,7 +21,7 @@ def broadcast_question(question: Question):
         "question_text": question.text,
     }
     json_data = json.dumps(data)
-    response = requests.post(service, data=data)
+    response = requests.post(service, json=data)
     return response
 
 
@@ -40,7 +40,8 @@ def publish_vote(vote: Vote):
         "vote_text": vote.text,
         "options": options,
     }
-    response = requests.post(service, data=data)
+
+    response = requests.post(service, json=data)
     return response
 
 
@@ -60,7 +61,7 @@ def publish_registry(registry: Registry):
         "options": options,
     }
 
-    response = requests.post(service, data=data)
+    response = requests.post(service, json=data)
     return response
 
 
@@ -80,7 +81,7 @@ def update_registry(registry: Registry):
         "options": options,
     }
 
-    response = requests.post(service, data=data)
+    response = requests.post(service, json=data)
     return response
 
 
