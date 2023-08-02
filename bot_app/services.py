@@ -45,7 +45,27 @@ def publish_vote(vote: Vote):
 
 
 def publish_registry(registry: Registry):
-    service = settings.BOT_URL + "registry/publish"
+    service = settings.BOT_URL + "registration/publish"
+    events = RegistryEvent.objects.filter(registry_id=registry.id)
+    options = []
+    for event in events:
+        options.append({
+            "option_id": event.id,
+            "option_text": event.bot_text,
+        })
+
+    data = {
+        "registration_id": registry.id,
+        "registration_text": registry.text,
+        "options": options,
+    }
+
+    response = requests.post(service, data=data)
+    return response
+
+
+def update_registry(registry: Registry):
+    service = settings.BOT_URL + "registration/update"
     events = RegistryEvent.objects.filter(registry_id=registry.id)
     options = []
     for event in events:

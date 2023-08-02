@@ -2,7 +2,6 @@ import requests
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIRequest
 from ninja import NinjaAPI, Schema, Field, UploadedFile, File, Form
-
 from .models import Error
 from .services import checkinitdata
 
