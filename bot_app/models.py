@@ -81,3 +81,30 @@ class RegistryEvent(models.Model):
         if len(text) > 15:
             return text[:15] + "..."
         return f"{str(self.registry)} | {text}"
+
+
+class ResponseLog(PolymorphicModel):
+    time = models.TimeField(auto_now=False, null=True, blank=True)
+    date = models.DateField(auto_now=False, null=True, blank=True)
+    user = models.ForeignKey(to=User, on_delete=models.DO_NOTHING)
+    broadcast = None
+
+    def __str__(self):
+        return f"{str(self.broadcast)} {str(self.user)}"
+
+
+class Answer(ResponseLog):
+    broadcast = models.ForeignKey(to=Question, on_delete=models.DO_NOTHING, )
+    text = models.TextField(max_length=400)
+
+
+class VoteLog(ResponseLog):
+    broadcast = models.ForeignKey(to=Vote, on_delete=models.DO_NOTHING, )
+    voted_option = models.ForeignKey(to=VoteOption,
+                                     on_delete=models.DO_NOTHING, )
+
+
+class RegistryLog(ResponseLog):
+    broadcast = models.ForeignKey(to=Registry, on_delete=models.DO_NOTHING, )
+    voted_option = models.ForeignKey(to=RegistryEvent,
+                                     on_delete=models.DO_NOTHING, )

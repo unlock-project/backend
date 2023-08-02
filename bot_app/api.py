@@ -46,14 +46,53 @@ class ExceptionResponse(Schema):
 class ExceptionRequest(Schema):
     data: str = Field(...)
 
+
 class LogsResponse(Schema):
     logs: List[str] = Field(..., example=['log-2023-07-16', 'log-2023-07-14'])
+
 
 class QRRequest(Schema):
     auth: str = Field(...)
 
+
 class QRResponse(Schema):
     qr_data: str = Field(...)
+
+
+class QuestionRequest(Schema):
+    question_id: int = Field(...)
+    user_id: int = Field(...)
+    answer: str = Field(...)
+
+
+class QuestionResponse(Schema):
+    question_id: int = Field(...)
+    text: str = Field(...)
+
+
+class RegistrationRequest(Schema):
+    registration_id: int = Field(...)
+    user_id: int = Field(...)
+    option_id: int = Field(...)
+
+
+class RegistrationResponse(Schema):
+    registration_id: int = Field(...)
+    option_id: int = Field(...)
+    new_text: str = Field(...)
+
+
+class VoteRequest(Schema):
+    vote_id: int = Field(...)
+    user_id: int = Field(...)
+    option_id: int = Field(...)
+
+
+class VoteResponse(Schema):
+    vote_id: int = Field(...)
+    option_id: int = Field(...)
+    text: str = Field(...)
+
 
 @api.post("/checkinitdata", response=CheckInitDataResponse)
 def checkinitdata_request(request, data: CheckInitDataRequest):
@@ -80,8 +119,6 @@ def scanned_request(request, data: ScannedRequest):
     # CHECK IF USER IS ORGANIZER
     # DO MAGIC
 
-
-
     sendmessage(participant.id, "Вас отметили")
 
     return 200, ScannedResponse(user_id=user_id, qr_data=qr_data)
@@ -99,6 +136,7 @@ def error_request(request: WSGIRequest, data: ExceptionRequest = Form(...), trac
         error_model.save()
     return ExceptionResponse(error_id=error_id, error_url=error_model.traceback_page)
 
+
 @api.get("/logs", response={200: LogsResponse, 500: ErrorResponse})
 def logs_request(request: WSGIRequest):
     try:
@@ -108,10 +146,8 @@ def logs_request(request: WSGIRequest):
     return 200, LogsResponse(logs=logs)
 
 
-
-
 @api.post("/qr", response={200: QRResponse, 400: ErrorResponse})
-def qr_request(request: WSGIRequest,  data: QRRequest):
+def qr_request(request: WSGIRequest, data: QRRequest):
     checked_data = checkinitdata(data.auth)
     if 'valid' not in checked_data.keys() or not checked_data['valid'] or 'chat_id' not in checked_data.keys():
         return 400, ErrorResponse(reason="Not valid telegram web app data")
@@ -128,3 +164,18 @@ def qr_request(request: WSGIRequest,  data: QRRequest):
         return 400, ErrorResponse(reason="No qr data")
 
     return QRResponse(qr_data=qr_data)
+
+
+@api.post("/question/response", response={200: QuestionResponse, 400: ErrorResponse})
+def answer_request(request: WSGIRequest, data: QuestionRequest):
+    pass
+
+
+@api.post("/registration/response", response={200: RegistrationResponse, 400: ErrorResponse})
+def event_register_request(request: WSGIRequest, data: RegistrationRequest):
+    pass
+
+
+@api.post("/vote/response", response={200: VoteResponse, 400: ErrorResponse})
+def choose_request(request: WSGIRequest, data: VoteRequest):
+    pass
