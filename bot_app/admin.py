@@ -104,6 +104,8 @@ class VoteOptionsAdminInline(admin.TabularInline):
 class RegistryEventAdminInline(admin.TabularInline):
     model = RegistryEvent
     extra = 0
+    fields = ["id", "text", "max", "count"]
+
 
 
 @admin.register(Message)
@@ -137,16 +139,17 @@ class AttendanceAdmin(PolymorphicChildModelAdmin):
     ]
 
 
-@admin.register(ResponseLog)
-class ResponseLogAdmin(PolymorphicParentModelAdmin):
-    base_model = ResponseLog
-    child_models = (
-        Answer,
-        Vote,
-        Registry
-    )
-
-    list_display = ('broadcast', 'user')
+# @admin.register(ResponseLog)
+# class ResponseLogAdmin(PolymorphicParentModelAdmin):
+#     base_model = ResponseLog
+#     child_models = (
+#         Answer,
+#         Vote,
+#         Registry
+#     )
+#
+#     list_display = ('broadcast', 'user')
 
 
 admin.site.register(VoteOption, )
+admin.site.register(RegistryEvent, )

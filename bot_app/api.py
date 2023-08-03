@@ -6,8 +6,9 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
 from ninja import NinjaAPI, Schema, Field, File, Form, UploadedFile
 from ninja.responses import Response
-from .models import Error
+from .models import *
 from .services import checkinitdata, sendmessage
+import datetime
 
 from users_app.models import User
 
@@ -80,6 +81,7 @@ class RegistrationResponse(Schema):
     registration_id: int = Field(...)
     option_id: int = Field(...)
     new_text: str = Field(...)
+    message: str = Field(...)
 
 
 class VoteRequest(Schema):
@@ -168,12 +170,62 @@ def qr_request(request: WSGIRequest, data: QRRequest):
 
 @api.post("/question/response", response={200: QuestionResponse, 400: ErrorResponse})
 def answer_request(request: WSGIRequest, data: QuestionRequest):
-    pass
+    try:
+        question = Question.objects.get(pk=data.question_id)
+        message = question.response
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args[0])
+
+    try:
+        answer = Answer(
+            time=datetime.datetime.now(),
+            date=datetime.date.today(),
+            user=User.objects.get(pk=data.user_id),
+            broadcast=question,
+            text=data.answer
+        )
+        answer.save()
+
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args)
+
+    return 200, QuestionResponse(question_id=data.question_id, text=message)
 
 
 @api.post("/registration/response", response={200: RegistrationResponse, 400: ErrorResponse})
 def event_register_request(request: WSGIRequest, data: RegistrationRequest):
-    pass
+    try:
+        registration = Registry.objects.get(pk=data.registration_id)
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args[0])
+
+    try:
+        registration_event = RegistryEvent.objects.get(pk=data.option_id)
+
+        if registration_event.max <= registration_event.count:
+            return 200, RegistrationResponse(registration_id=data.registration_id, option_id=data.option_id,
+                                             new_text=registration_event.bot_text, message=registration_event.full_message)
+
+        message = registration_event.success_message
+
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args[0])
+
+    try:
+        registry = RegistryLog(
+            time=datetime.datetime.now(),
+            date=datetime.date.today(),
+            user=User.objects.get(pk=data.user_id),
+            broadcast=registration,
+            voted_option=registration_event
+        )
+        registry.save()
+
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args)
+
+    return 200, RegistrationResponse(registration_id=data.registration_id, option_id=data.option_id,
+                                     new_text=registration_event.bot_text, message=message)
 
 
 @api.post("/vote/response", response={200: VoteResponse, 400: ErrorResponse})

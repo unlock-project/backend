@@ -5,7 +5,7 @@ from django.db import models
 from events_app.models import Event
 from users_app.models import User, Team
 from polymorphic.models import PolymorphicModel
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete, post_save
 from django.dispatch.dispatcher import receiver
 
 
@@ -15,6 +15,7 @@ class Broadcast(PolymorphicModel):
     time = models.TimeField(auto_now=False, null=True, blank=True)
     date = models.DateField(auto_now=False, null=True, blank=True)
     users = models.ManyToManyField(to=User, related_name='users_list', default=User.all_users)
+    response = models.TextField(max_length=100, blank=True, null=True, default="Ответ получен, спасибо!")
     activated = models.BooleanField(default=False, )
 
     def __str__(self):
@@ -76,6 +77,18 @@ class RegistryEvent(models.Model):
     def bot_text(self):
         return f"{self.text} ({self.count}/{self.max})"
 
+    @property
+    def success_message(self):
+        return f"Ты зарегистрировался на {self.text}"
+
+    @property
+    def error_message(self):
+        return f"Ты уже зарегистрировался на {self.text}"
+
+    @property
+    def full_message(self):
+        return f"К сожалению, уже нет мест на данном ивенте"
+
     def __str__(self):
         text = self.text
         if len(text) > 15:
@@ -108,3 +121,17 @@ class RegistryLog(ResponseLog):
     broadcast = models.ForeignKey(to=Registry, on_delete=models.DO_NOTHING, )
     voted_option = models.ForeignKey(to=RegistryEvent,
                                      on_delete=models.DO_NOTHING, )
+
+
+@receiver(post_save, sender=RegistryLog)
+def _register_to_event(sender, instance: RegistryLog, **kwargs):
+    registration_event = RegistryEvent.objects.get(pk=instance.voted_option.id)
+    registration_event.count += 1
+    registration_event.save()
+
+
+@receiver(post_delete, sender=RegistryLog)
+def _cancel_register(sender, instance: RegistryLog, **kwargs):
+    registration_event = RegistryEvent.objects.get(pk=instance.voted_option.id)
+    registration_event.count -= 1
+    registration_event.save()
