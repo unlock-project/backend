@@ -62,7 +62,7 @@ class BonusUser(Event):
 
 
 def generate_promo():
-    return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(20))
+    return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(8))
 
 
 class Promo(Event):
@@ -260,7 +260,7 @@ def check_and_apply_promo_code(user_id, promo_code):
     return "Промокод успешно активирован!"
 
 
-# Attendance Тут не рабочая модель
+# Attendance
 def mark_attendance(user_id, attendance_id):
     try:
         user = User.objects.get(id=user_id)
@@ -275,10 +275,11 @@ def mark_attendance(user_id, attendance_id):
     if AttendanceLog.objects.filter(user=user, attendance=attendance).exists():
         return "Вы уже отметились на это событие."
 
-    attendance_log = AttendanceLog.objects.create(user=user, attendance=attendance, score=Attendance.score)
+    attendance_log = AttendanceLog.objects.create(user=user, attendance=attendance)
+    attendance_log.save()
 
-    user.balance += Attendance.score
-    user.team.balance += Attendance.score
+    user.balance += attendance.score
+    user.team.balance += attendance.score
     user.save()
 
     return f"Посещаемость отмечена успешно!"
