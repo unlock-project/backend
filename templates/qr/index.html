@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="MobileOptimized" content="176" />
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="robots" content="noindex,nofollow" />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <link rel="stylesheet" href={% static 'webapp/css/style.css' %}>
+    <script>
+        function setThemeClass() {
+            document.documentElement.className = Telegram.WebApp.colorScheme;
+        }
+        Telegram.WebApp.onEvent('themeChanged', setThemeClass);
+        setThemeClass();
+        var unlock_logo = "{% static 'qr/images/unlock_logo1.svg' %}"
+    </script>
+    <style>
+ 
+    </style>
+</head>
+
+<body class="">
+
+
+<section>
+    <div id="qr_code"></div>
+</section>
+
+<section>
+
+    <div class="hint">
+        Data passed to webview.
+        <span id="webview_data_status" class="status_need">Checking hash...</span>
+    </div>
+    <div class="hint">
+        Name: <span id="user_name"></span>,
+        Username: <span id="user_username"></span>
+    </div>
+    <div class="hint">
+        Version: <span id="ver"></span>,
+        platform: <span id="platform"></span>
+    </div>
+
+</section>
+<script type="text/javascript" src="{% static 'qr/js/script.js' %}"></script>
+</body>
+</html>
