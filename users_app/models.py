@@ -11,6 +11,9 @@ class Team(models.Model):
     balance = models.IntegerField(default=0)
     tutor = models.OneToOneField("User", related_name="tutor", null=True, blank=True, on_delete=models.DO_NOTHING)
 
+    def __str__(self):
+        return self.name
+
 
 class User(AbstractUser):
     object = CustomUserManager()
