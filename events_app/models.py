@@ -62,7 +62,7 @@ class BonusUser(Event):
 
 
 def generate_promo():
-    return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(8))
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
 
 
 class Promo(Event):
@@ -77,7 +77,7 @@ class Promo(Event):
     promo_code = models.CharField(max_length=20, unique=True, default=generate_promo, db_index=True)
     code_type = models.IntegerField(choices=CHOICE_LIST, default=0, verbose_name='Promo type')
     condition = models.IntegerField(choices=CONDITION_LIST, default=0)
-    used_by = models.CharField(max_length=100, default=None)
+    used_by = models.CharField(max_length=100, default=None, blank=True)
     score = models.IntegerField(default=0)
     pass
 
@@ -206,6 +206,8 @@ def bonus_team_log_post_delete(sender, instance, **kwargs):
 def bonus_user_log_pre_delete(sender, instance, **kwargs):
     user = instance.user
     user.balance -= instance.score
+    team = user.team
+    team.balance -= instance.score
 
 
 @receiver(pre_save, sender=BonusUserLog)
@@ -217,18 +219,25 @@ def bonus_user_log_pre_save(sender, instance, **kwargs):
         instance._original_score = 0
     user = instance.user
     user.balance += instance.score - instance._original_score
+    team = user.team
+    team.balance += instance.score - instance._original_score
+    team.save()
 
 
 @receiver(post_save, sender=BonusUserLog)
 def bonus_user_log_post_save(sender, instance, **kwargs):
     user = instance.user
     user.save()
+    team = user.team
+    team.save()
 
 
 @receiver(post_delete, sender=BonusUserLog)
 def bonus_user_log_post_save(sender, instance, **kwargs):
     user = instance.user
     user.save()
+    team = user.team
+    team.save()
 
 
 # Promo
@@ -241,12 +250,12 @@ def check_and_apply_promo_code(user_id, promo_code):
     user = User.objects.get(id=user_id)
 
     if entry_promo.code_type == 1:
-        entry_promo.used_by = f"{user.username}"
+        entry_promo.used_by = f"{user.first_name} {user.last_name}"
         user.balance += entry_promo.score
         user.save()
     elif entry_promo.code_type == 2:
         team = user.team
-        entry_promo.used_by = f"{team.name}"
+        entry_promo.used_by = f"{team.name}, {user.first_name} {user.last_name}"
         team.balance += entry_promo.score
         users = User.objects.filter(team_id=user.team_id)
         for user_ in users:

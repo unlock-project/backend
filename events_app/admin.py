@@ -2,7 +2,6 @@ from django.contrib import admin
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin
 from django.db.models.signals import pre_save
 from .models import *
-from .forms import *
 
 
 class ContestAdminInline(admin.TabularInline):
