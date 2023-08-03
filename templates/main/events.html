@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Events</h4>
+                    <p class="card-description">
+                        Select the event in which you want to mark the attendance
+                    </p>
+                    <div class="form-group">
+                      <label>Event</label>
+                      <div class="input-group col-xs-12">
+                        <select class="form-control" id="eventSelect">
+                            <option>Select event</option>
+                            {% for event in events %}
+                            <option id="{{ event.id }}">{{ event.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="input-group-append">
+                          <button class="file-upload-browse btn btn-primary" type="button" onclick="sendScanners()">Send scanner</button>
+                        </span>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        function sendScanners(){
+            select = document.getElementById('eventSelect');
+            selectedIndex = select.selectedIndex;
+            if (selectedIndex === 0){
+                createAlert('Choose specific event', 'warning');
+                return
+            }
+            event_id = select.options[selectedIndex].id;
+            post('/bot/api/sendscanner', {'event_id': event_id}).then(
+                data => {
+                    createAlert('Sent to: ' + data.organizers_ids);
+                }
+            );
+        }
+
+
+        $('#events-tab').addClass('active')
+    </script>
+{% endblock %}

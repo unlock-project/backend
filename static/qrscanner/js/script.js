@@ -1,3 +1,10 @@
+params = new URLSearchParams(window.location.search)
+const event_el = document.querySelector('#event_id');
+const event_id = params.get('event_id')
+event_el.textContent = event_id
+
+var prev_qr = '';
+
 function apiRequest(method, data, onCallback) {
     const authData = Telegram.WebApp.initData || '';
     fetch('/bot/api/' + method, {
@@ -51,16 +58,19 @@ function showScanQrPopup() {
     Telegram.WebApp.showScanQrPopup({
         text: 'Scan personal QR code'
     }, function(text) {
-        apiRequest('scanned', {qr_data: text}, function (result) {
-            if(result && result.user_id){
-                Telegram.WebApp.showAlert(`Вы отметили пользователя. 
-                Пользователь: ${result.first_name} ${result.last_name}.
-                ID: ${result.user_id}`);
-            }
+        if(prev_qr !== text) {
+            prev_qr = text;
+            apiRequest('scanned', {qr_data: text, event_id: event_id}, function (result) {
+                if (result && result.user_id) {
+                    Telegram.WebApp.showAlert(`Вы отметили пользователя. 
+                    Пользователь: ${result.first_name} ${result.last_name}.
+                    ID: ${result.user_id}`);
+                } else if (result.reason) {
+                    Telegram.WebApp.showAlert(result.reason);
+                }
 
-        })
-
-        return true;
+            })
+        }
     });
 }
 Telegram.WebApp.ready();

@@ -27,6 +27,8 @@
                           <th>Id</th>
                           <th>First name</th>
                           <th>Last name</th>
+                          <th>Team</th>
+                          <th>Balance</th>
                           <th>Actions</th>
                         </tr>
                       </thead>
@@ -36,10 +38,12 @@
                           <td>{{ user.id }}</td>
                           <td>{{ user.first_name }}</td>
                           <td>{{ user.last_name }}</td>
+                          <th><button type="button" class="btn btn-link btn-fw" onclick="gotoTeam({{ user.team.id }})">{{ user.team.name }}</button></th>
+                          <th>{{ user.balance }}</th>
                           <td>
-                              <button type="button" id="send{{ user.id }}" class="btn btn-success btn-rounded btn-icon" onclick="window.location.href = '/sendmsg?user_id={{ user.id }}'" title="Send message"><i class="mdi mdi-message-arrow-right"></i></button>
-                            <button type="button" id="send{{ user.id }}" class="btn btn-info btn-rounded btn-icon" onclick="window.location.href = '/userids?user_id={{ user.id }}'" title="Chat id"><i class="mdi mdi-identifier"></i></button>
-                          </td>
+                              <button type="button" class="btn btn-success btn-rounded btn-icon" onclick="window.location.href = '/sendmsg?user_id={{ user.id }}'" title="Send message"><i class="mdi mdi-message-arrow-right"></i></button>
+                              <button type="button" class="btn btn-info btn-rounded btn-icon" onclick="window.location.href = '/userids?user_id={{ user.id }}'" title="Chat id"><i class="mdi mdi-identifier"></i></button>
+                           </td>
                         </tr>
                       {% endfor %}
                       </tbody>
@@ -58,5 +62,10 @@
     <script>
     unlock_logo = "{% static 'qr/images/unlock_logo1.svg' %}"
     $('#users-tab').addClass('active')
+
+    function gotoTeam(team_id){
+        window.location.href = "/teams?team_id=" + team_id;
+    }
+
     </script>
 {% endblock %}

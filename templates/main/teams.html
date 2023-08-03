@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block head %}
+    <style>
+    #qr_code{
+        width: 250px;
+        height: 250px;
+        margin: 0 auto;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}
+
+{% else %}
+<div class="row">
+<div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Teams</h4>
+                    <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Id</th>
+                          <th>Name</th>
+                          <th>Balance</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for team in teams %}
+                        <tr id="team-{{ team.id }}">
+                          <td>{{ team.id }}</td>
+                          <td>{{ team.name }}</td>
+                          <td>{{ team.balance }}</td>
+                          <td>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+    </div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+    {% load static %}
+    <script src="{% static 'js/qrgen.js' %}"></script>
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <script>
+    unlock_logo = "{% static 'qr/images/unlock_logo1.svg' %}"
+    $('#teams-tab').addClass('active')
+    params = new URLSearchParams(window.location.search)
+    if(params.get('team_id')) $('#team-' + params.get('team_id')).addClass('table-active');
+    </script>
+{% endblock %}

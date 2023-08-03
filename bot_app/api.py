@@ -9,7 +9,7 @@ from ninja.errors import AuthenticationError
 from ninja.responses import Response
 from .models import *
 from ninja.security import APIKeyQuery
-from events_app.models import Attendance, AttendanceLog
+from events_app.models import Attendance, AttendanceLog, Promo
 from .services import checkinitdata, sendmessage
 import datetime
 
@@ -110,6 +110,14 @@ class VoteResponse(Schema):
     option_id: int = Field(...)
     text: str = Field(...)
 
+class PromoRequest(Schema):
+    code: str = Field(...)
+    user_id: int = Field(...)
+
+
+class PromoResponse(Schema):
+    code: str = Field(...)
+    text: str = Field(...)
 
 class UserIdResponse(Schema):
     user_id: int = Field(..., example=13)
@@ -136,6 +144,12 @@ class MessageSentResponse(Schema):
     message: str = Field(..., example='Hello world!')
     message_id: int = Field(..., example=1)
 
+
+class SendScannerRequest(Schema):
+    event_id: int = Field(...)
+
+class SendScannerResponse(Schema):
+    organizers_ids: List[int] = Field(...)
 
 @api.post("/checkinitdata", response=CheckInitDataResponse)
 def checkinitdata_request(request, data: CheckInitDataRequest):
@@ -165,13 +179,21 @@ def scanned_request(request, data: ScannedRequest):
         return 400, ErrorResponse(reason="Unauthorized user")
 
     attendance = Attendance.objects.get(pk=data.event_id)
+
+    logs = AttendanceLog.objects.filter(attendance=attendance, user=participant)
+
+    if logs.exists():
+        return 400, ErrorResponse(reason="Этот человек уже отмечен")
+
     log = AttendanceLog(
         attendance=attendance,
         user=participant,
     )
     log.save()
 
-    sendmessage(participant.id, "Вас отметили")
+
+    sendmessage(participant.id, f"Вас отметили на мероприятии: {attendance.name}")
+
 
     return 200, ScannedResponse(user_id=participant.id, first_name=participant.first_name,
                                 last_name=participant.last_name)
@@ -250,12 +272,33 @@ def qr_request(request: WSGIRequest, data: QRRequest):
         user = User.objects.get(id=user_id)
         qr_data = user.qr
     except Exception as ex:
-        return 400, ErrorResponse(reason=ex.args)
+        return 400, ErrorResponse(reason=str(ex))
 
     if not qr_data:
         return 400, ErrorResponse(reason="No qr data")
 
     return QRResponse(qr_data=qr_data)
+
+@api.post("/sendscanner", response={200: SendScannerResponse, 400: ErrorResponse}, auth=apiauth)
+def sendscanner_request(request: WSGIRequest, data: SendScannerRequest):
+    event_id = data.event_id
+    event = Attendance.objects.get(id=event_id)
+
+    organizers = User.objects.filter(is_staff=True).all() # Change to is_organizer when it will be
+    organizers_ids = [organizer.id for organizer in organizers]
+
+
+    try:
+        response = requests.post(settings.BOT_URL + '/sendscanner', json={'event_id': event_id,
+                                                                          'event_name': event.name,
+                                                                          'organizers': organizers_ids}).json()
+        print(response)
+    except Exception as ex:
+        return 400, ErrorResponse(reason=str(ex))
+
+    return SendScannerResponse(organizers_ids=organizers_ids)
+
+
 
 
 @api.post("/question/response", response={200: QuestionResponse, 400: ErrorResponse})
@@ -370,6 +413,54 @@ def choose_request(request: WSGIRequest, data: VoteRequest):
     return 200, VoteResponse(vote_id=data.vote_id, option_id=data.option_id,
                              text=message)
 
+
+@api.post("/promo/activate", response={200: PromoResponse, 400: ErrorResponse})
+def choose_request(request: WSGIRequest, data: PromoRequest):
+    try:
+        user = User.objects.get(pk=data.user_id)
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args[0])
+
+    try:
+        promo = Promo.objects.get(promo_code=data.code)
+
+        if promo.condition == 2:
+            return 200, PromoResponse(code=data.code,
+                                      text=promo.used_message)
+
+    except Exception as ex:
+        return 200, PromoResponse(code=data.code,
+                                  text="Промокод не найден")
+
+    promo_message = "Произошла ошибка ;-("
+
+    try:
+
+        if promo.code_type == 1:
+            promo.used_by = f"{user.first_name} {user.last_name}"
+            user.balance += promo.score
+            user.save()
+            promo_message = f"Вам начислено {promo.score} баллов"
+
+        elif promo.code_type == 2:
+            team = user.team
+            promo.used_by = f"{team.name}, {user.first_name} {user.last_name}"
+            team.balance += promo.score
+            users = User.objects.filter(team_id=user.team_id)
+            for user_ in users:
+                user_.balance += promo.score
+                user_.save()
+            team.save()
+            promo_message = f"Вашей команде начислено {promo.score} баллов"
+
+        promo.condition = 2
+        promo.save()
+
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args)
+
+    return 200, PromoResponse(code=data.code,
+                              text=promo_message)
 
 @api.exception_handler(AuthenticationError)
 def unauthorizedError(request, exc):
