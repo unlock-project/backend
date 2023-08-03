@@ -442,7 +442,6 @@ def choose_request(request: WSGIRequest, data: PromoRequest):
         return 200, PromoResponse(code=data.code,
                                   text="Промокод не найден")
 
-    promo_message = "Произошла ошибка ;-("
 
     try:
 
@@ -450,7 +449,6 @@ def choose_request(request: WSGIRequest, data: PromoRequest):
             promo.used_by = f"{user.first_name} {user.last_name}"
             user.balance += promo.score
             user.save()
-            promo_message = f"Вам начислено {promo.score} баллов"
 
         elif promo.code_type == 2:
             team = user.team
@@ -461,7 +459,6 @@ def choose_request(request: WSGIRequest, data: PromoRequest):
                 user_.balance += promo.score
                 user_.save()
             team.save()
-            promo_message = f"Вашей команде начислено {promo.score} баллов"
 
         promo.condition = 2
         promo.save()
@@ -470,7 +467,7 @@ def choose_request(request: WSGIRequest, data: PromoRequest):
         return 400, ErrorResponse(reason=ex.args)
 
     return 200, PromoResponse(code=data.code,
-                              text=promo_message)
+                              text=promo.message)
   
 
 @api.exception_handler(AuthenticationError)
