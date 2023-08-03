@@ -5,8 +5,10 @@ from django.contrib import admin
 from django.contrib.admin.widgets import AdminURLFieldWidget
 from django.forms import widgets, ModelForm
 from django.utils.safestring import mark_safe
+from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter
+from bot_app.services import *
 
-from .models import Error, Token
+from .models import *
 
 
 class PrettyJSONWidget(widgets.Textarea):
@@ -44,6 +46,113 @@ class ErrorAdminForm(ModelForm):
 class ErrorAdmin(admin.ModelAdmin):
     list_display = ["id", ]
     form = ErrorAdminForm
+
+    
+@admin.action(description="Запуск рассылку")
+def make_published(modeladmin, request, queryset):
+    for obj in queryset:
+        model = obj.get_real_instance_class()
+        if model is Message:
+            broadcast_message(obj.get_real_instance())
+        elif model is Question:
+            broadcast_question(obj.get_real_instance())
+        elif model is Vote:
+            publish_vote(obj.get_real_instance())
+        elif model is Registry:
+            publish_registry(obj.get_real_instance())
+
+    queryset.update(activated=True)
+
+
+class BroadcastChildAdmin(PolymorphicChildModelAdmin):
+    base_model = Broadcast
+    list_display = ["id", "text", "activated"]
+    ordering = ["id"]
+    actions = [make_published]
+
+
+@admin.register(Broadcast)
+class BroadcastParentAdmin(PolymorphicParentModelAdmin):
+    """ The parent model admin """
+    base_model = Broadcast
+    list_display = ["id", "name", "activated"]
+    child_models = (Question, Vote, Registry, Message)
+    list_filter = (PolymorphicChildModelFilter,)
+    actions = [make_published]
+
+
+class AnswerAdminInline(admin.TabularInline):
+    model = Answer
+    extra = 0
+
+
+class VoteLogAdminInline(admin.TabularInline):
+    model = VoteLog
+    extra = 0
+
+
+class RegistryLogAdminInline(admin.TabularInline):
+    model = RegistryLog
+    extra = 0
+
+
+class VoteOptionsAdminInline(admin.TabularInline):
+    model = VoteOption
+    extra = 0
+
+
+class RegistryEventAdminInline(admin.TabularInline):
+    model = RegistryEvent
+    extra = 0
+    fields = ["id", "text", "max", "count"]
+
+
+
+@admin.register(Message)
+class AttendanceAdmin(PolymorphicChildModelAdmin):
+    base_model = Message
+
+
+@admin.register(Question)
+class AttendanceAdmin(PolymorphicChildModelAdmin):
+    base_model = Question
+    inlines = [
+        AnswerAdminInline,
+    ]
+
+
+@admin.register(Vote)
+class AttendanceAdmin(PolymorphicChildModelAdmin):
+    base_model = Vote
+    inlines = [
+        VoteOptionsAdminInline,
+        VoteLogAdminInline,
+    ]
+
+
+@admin.register(Registry)
+class AttendanceAdmin(PolymorphicChildModelAdmin):
+    base_model = Registry
+    inlines = [
+        RegistryEventAdminInline,
+        RegistryLogAdminInline,
+    ]
+
+
+# @admin.register(ResponseLog)
+# class ResponseLogAdmin(PolymorphicParentModelAdmin):
+#     base_model = ResponseLog
+#     child_models = (
+#         Answer,
+#         Vote,
+#         Registry
+#     )
+#
+#     list_display = ('broadcast', 'user')
+
+
+admin.site.register(VoteOption, )
+admin.site.register(RegistryEvent, )
 
 @admin.register(Token)
 class TokenAdmin(admin.ModelAdmin):

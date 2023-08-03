@@ -7,10 +7,11 @@ from django.http import HttpResponse, HttpRequest
 from ninja import NinjaAPI, Schema, Field, File, Form, UploadedFile
 from ninja.errors import AuthenticationError
 from ninja.responses import Response
+from .models import *
 from ninja.security import APIKeyQuery
 
-from .models import Error, Token
 from .services import checkinitdata, sendmessage
+import datetime
 
 from users_app.models import User
 
@@ -58,14 +59,53 @@ class ExceptionResponse(Schema):
 class ExceptionRequest(Schema):
     data: str = Field(...)
 
+
 class LogsResponse(Schema):
     logs: List[str] = Field(..., example=['log-2023-07-16', 'log-2023-07-14'])
+
 
 class QRRequest(Schema):
     auth: str = Field(...)
 
+
 class QRResponse(Schema):
     qr_data: str = Field(...)
+
+
+class QuestionRequest(Schema):
+    question_id: int = Field(...)
+    user_id: int = Field(...)
+    answer: str = Field(...)
+
+
+class QuestionResponse(Schema):
+    question_id: int = Field(...)
+    text: str = Field(...)
+
+
+class RegistrationRequest(Schema):
+    registration_id: int = Field(...)
+    user_id: int = Field(...)
+    option_id: int = Field(...)
+
+
+class RegistrationResponse(Schema):
+    registration_id: int = Field(...)
+    option_id: int = Field(...)
+    new_text: str = Field(...)
+    message: str = Field(...)
+
+
+class VoteRequest(Schema):
+    vote_id: int = Field(...)
+    user_id: int = Field(...)
+    option_id: int = Field(...)
+
+
+class VoteResponse(Schema):
+    vote_id: int = Field(...)
+    option_id: int = Field(...)
+    text: str = Field(...)
 
 class UserIdResponse(Schema):
     user_id: int = Field(..., example=13)
@@ -115,8 +155,6 @@ def scanned_request(request, data: ScannedRequest):
     # CHECK IF USER IS ORGANIZER
     # DO MAGIC
 
-
-
     sendmessage(participant.id, "Вас отметили")
 
     return 200, ScannedResponse(user_id=participant.id, first_name=participant.first_name,
@@ -136,6 +174,8 @@ def error_request(request: WSGIRequest, data: ExceptionRequest = Form(...), trac
     return ExceptionResponse(error_id=error_id, error_url=error_model.traceback_page)
 
 @api.get("/logs", response={200: LogsResponse, 500: ErrorResponse}, auth=apiauth)
+
+
 def logs_request(request: WSGIRequest):
     try:
         logs = requests.get(settings.BOT_URL + '/logs').json()["logs"]
@@ -149,6 +189,8 @@ def user_id_request(request: WSGIRequest, chat_id: int):
         response = requests.get(settings.BOT_URL + '/user/id', params={'chat_id': chat_id})
         data = response.json()
 
+
+        
         if not response.ok:
             return 400, ErrorResponse(**data)
         user_id = data['user_id']
@@ -178,8 +220,9 @@ def send_msg_request(request: WSGIRequest, data: SendMessageRequest):
     except Exception as ex:
         return 400, ErrorResponse(reason=str(ex))
     return 200, MessageSentResponse(**data)
+
 @api.post("/qr", response={200: QRResponse, 400: ErrorResponse})
-def qr_request(request: WSGIRequest,  data: QRRequest):
+def qr_request(request: WSGIRequest, data: QRRequest):
     checked_data = checkinitdata(data.auth)
     if 'valid' not in checked_data.keys() or not checked_data['valid'] or 'chat_id' not in checked_data.keys():
         return 400, ErrorResponse(reason="Not valid telegram web app data")
@@ -197,6 +240,77 @@ def qr_request(request: WSGIRequest,  data: QRRequest):
 
     return QRResponse(qr_data=qr_data)
 
+
+@api.post("/question/response", response={200: QuestionResponse, 400: ErrorResponse})
+def answer_request(request: WSGIRequest, data: QuestionRequest):
+    try:
+        question = Question.objects.get(pk=data.question_id)
+        message = question.response
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args[0])
+
+    try:
+        answer = Answer(
+            time=datetime.datetime.now(),
+            date=datetime.date.today(),
+            user=User.objects.get(pk=data.user_id),
+            broadcast=question,
+            text=data.answer
+        )
+        answer.save()
+
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args)
+
+    return 200, QuestionResponse(question_id=data.question_id, text=message)
+
+
+@api.post("/registration/response", response={200: RegistrationResponse, 400: ErrorResponse})
+def event_register_request(request: WSGIRequest, data: RegistrationRequest):
+    try:
+        registration = Registry.objects.get(pk=data.registration_id)
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args[0])
+
+    try:
+        registration_event = RegistryEvent.objects.get(pk=data.option_id)
+
+        if registration_event.max < registration_event.count:
+            return 200, RegistrationResponse(registration_id=data.registration_id, option_id=data.option_id,
+                                             new_text=registration_event.bot_text, message=registration_event.full_message)
+
+        message = registration_event.success_message
+
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args[0])
+
+    logs = RegistryLog.objects.filter(user=User.objects.get(pk=data.user_id), broadcast=registration)
+
+    if logs.exists():
+        return 200, RegistrationResponse(registration_id=data.registration_id, option_id=data.option_id,
+                                         new_text=registration_event.bot_text, message=registration_event.error_message)
+    try:
+        registry = RegistryLog(
+            time=datetime.datetime.now(),
+            date=datetime.date.today(),
+            user=User.objects.get(pk=data.user_id),
+            broadcast=registration,
+            voted_option=registration_event
+        )
+        registry.save()
+
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args)
+
+    return 200, RegistrationResponse(registration_id=data.registration_id, option_id=data.option_id,
+                                     new_text=registration_event.bot_text, message=message)
+
+
+@api.post("/vote/response", response={200: VoteResponse, 400: ErrorResponse})
+def choose_request(request: WSGIRequest, data: VoteRequest):
+    pass
+  
+  
 @api.exception_handler(AuthenticationError)
 def unauthorizedError(request, exc):
     return api.create_response(request, {'reason': 'Unauthorized'}, status=401)

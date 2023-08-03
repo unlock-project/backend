@@ -30,7 +30,7 @@ def publish_vote(vote: Vote):
     options = VoteOption.objects.filter(voting__id=vote.id)
     options_serial = []
     for option in options:
-        options.append({
+        options_serial.append({
             "option_id": option.id,
             "option_text": option.text,
         })
@@ -38,7 +38,7 @@ def publish_vote(vote: Vote):
     data = {
         "vote_id": vote.id,
         "vote_text": vote.text,
-        "options": options,
+        "options": options_serial,
     }
     response = requests.post(service, data=data)
     return response
@@ -90,9 +90,11 @@ def checkinitdata(_auth: str) -> dict:
     result = json.loads(response.content)
     return result
 
-def sendmessage(user_id: int, message:str):
+
+def sendmessage(user_id: int, message: str):
     data = json.dumps({"user_id": user_id, "message": message})
     response = requests.post(settings.BOT_URL + '/sendmessage',
-                            data=data,
-                            headers={"content-type": "application/json", })
-    return response
+                             data=data,
+                             headers={"content-type": "application/json", })
+    return response.ok
+
