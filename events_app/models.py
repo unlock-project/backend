@@ -26,6 +26,7 @@ class Attendance(Event):
     class Meta:
         verbose_name = 'Attendance'
         verbose_name_plural = 'Attendances'
+
     pass
 
 
@@ -37,6 +38,7 @@ class Contest(Event):
     class Meta:
         verbose_name = 'Contest'
         verbose_name_plural = 'Contests'
+
     pass
 
 
@@ -48,6 +50,7 @@ class BonusTeam(Event):
     class Meta:
         verbose_name = 'Team Bonus'
         verbose_name_plural = 'Team Bonuses'
+
     pass
 
 
@@ -59,6 +62,7 @@ class BonusUser(Event):
     class Meta:
         verbose_name = 'User Bonus'
         verbose_name_plural = 'User Bonuses'
+
     pass
 
 
@@ -80,8 +84,11 @@ class Promo(Event):
     condition = models.IntegerField(choices=CONDITION_LIST, default=0)
     used_by = models.CharField(max_length=100, default=None, blank=True)
     score = models.IntegerField(default=0)
+    message = models.TextField(max_length=100, default="Промокод был активирован")
     pass
 
+    def used_message(self):
+        return "Промокод не активный"
 
 # Logs
 class ContestLog(models.Model):
@@ -293,3 +300,11 @@ def mark_attendance(user_id, attendance_id):
     user.save()
 
     return f"Посещаемость отмечена успешно!"
+
+
+@receiver(post_save, sender=AttendanceLog)
+def attendance_log_post_save(sender, instance, **kwargs):
+    user = instance.user
+    attendance = Attendance.objects.get(id=instance.attendance)
+    user.balance += attendance.score
+    user.save()

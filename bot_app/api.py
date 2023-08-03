@@ -9,7 +9,7 @@ from ninja.errors import AuthenticationError
 from ninja.responses import Response
 from .models import *
 from ninja.security import APIKeyQuery
-from events_app.models import Attendance, AttendanceLog, Promo
+from events_app.models import Attendance, AttendanceLog, Promo, BonusUser
 from .services import checkinitdata, sendmessage
 import datetime
 
@@ -20,7 +20,7 @@ class ApiAuth(APIKeyQuery):
     param_name = 'token'
 
     def authenticate(self, request: HttpRequest, key: Optional[str]) -> Optional[Any]:
-        return (Token.objects.filter(key=key).all()) or request.user.is_staff  # Change to right perms check
+        return (Token.objects.filter(key=key).all()) or request.user.is_staff or request.user.is_organizer  # Change to right perms check
 
 
 apiauth = ApiAuth()
@@ -118,6 +118,16 @@ class PromoRequest(Schema):
 class PromoResponse(Schema):
     code: str = Field(...)
     text: str = Field(...)
+
+class PromoRequest(Schema):
+    code: str = Field(...)
+    user_id: int = Field(...)
+
+
+class PromoResponse(Schema):
+    code: str = Field(...)
+    text: str = Field(...)
+
 
 class UserIdResponse(Schema):
     user_id: int = Field(..., example=13)
@@ -461,6 +471,7 @@ def choose_request(request: WSGIRequest, data: PromoRequest):
 
     return 200, PromoResponse(code=data.code,
                               text=promo_message)
+  
 
 @api.exception_handler(AuthenticationError)
 def unauthorizedError(request, exc):
