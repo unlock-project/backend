@@ -13,7 +13,8 @@ class Event(PolymorphicModel):
     date = models.DateField(default=timezone.now)
 
     def __str__(self):
-        return self.name
+        return f"{self.data} | {self.name}"
+
 
 
 class Attendance(Event):

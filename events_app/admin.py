@@ -1,5 +1,6 @@
 from django.contrib import admin
-from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin
+from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter
+
 from django.db.models.signals import pre_save
 from .models import *
 
@@ -27,6 +28,7 @@ class AttendanceAdminInline(admin.TabularInline):
 @admin.register(Event)
 class EventAdmin(PolymorphicParentModelAdmin):
     model = Event
+    list_filter = (PolymorphicChildModelFilter,)
     child_models = (
         Attendance,
         Contest,
