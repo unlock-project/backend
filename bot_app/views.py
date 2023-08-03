@@ -1,6 +1,9 @@
+import requests
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import render, redirect
+
+from unlock import settings
 from .models import Error
 
 

@@ -18,6 +18,6 @@ def today_schedule(request: WSGIRequest):
     events = events_today()
     message = ""
     for e in events:
-        message += f"{str(e)}"
+        message += f"{str(e)}\n"
 
     return 200, ScheduleResponse(message=message)

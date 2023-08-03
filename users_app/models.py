@@ -4,7 +4,8 @@ from .managers import CustomUserManager
 
 
 # Create your models here.
-
+def generateQrData():
+    return "fsadfjks"
 
 class Team(models.Model):
     name = models.CharField(max_length=100)
@@ -22,7 +23,7 @@ class User(AbstractUser):
     team = models.ForeignKey(to=Team, null=True, blank=True, on_delete=models.DO_NOTHING)
     balance = models.IntegerField(default=0)
     telegram = models.CharField(max_length=100, null=True, blank=True)
-    qr = models.CharField(max_length=100, unique=True, blank=True)
+    qr = models.CharField(max_length=100, unique=True, blank=True, default=generateQrData)
     is_organizer = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
@@ -34,3 +35,5 @@ class User(AbstractUser):
     @staticmethod
     def all_users():
         return User.objects.all()
+
+

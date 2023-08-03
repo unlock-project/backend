@@ -16,6 +16,7 @@ class Event(PolymorphicModel):
         return f"{self.date} | {self.name}"
 
 
+
 class Attendance(Event):
     score = models.IntegerField(default=0)
 

@@ -3,7 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.urls import path, include, re_path
 from django.views.generic import RedirectView
 
-from front.views import main_page, qr_generator_page, user_ids_page, send_msg_page, logs_page, users_page
+from front.views import (main_page, qr_generator_page, user_ids_page, send_msg_page, logs_page, users_page,
+                         event_choose_page, teams_page)
 
 urlpatterns = [
     path('', login_required(main_page), name='index'),
@@ -12,4 +13,6 @@ urlpatterns = [
     path('sendmsg', login_required(send_msg_page), name='sendmsg'),
     path('logs', login_required(logs_page), name='logs'),
     path('users', login_required(users_page), name='users'),
+    path('events', login_required(event_choose_page), name='events'),
+    path('teams', login_required(teams_page), name='teams')
 ]
