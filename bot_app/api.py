@@ -9,16 +9,18 @@ from ninja.errors import AuthenticationError
 from ninja.responses import Response
 from .models import *
 from ninja.security import APIKeyQuery
-
+from events_app.models import Attendance, AttendanceLog
 from .services import checkinitdata, sendmessage
 import datetime
 
 from users_app.models import User
 
+
 class ApiAuth(APIKeyQuery):
     param_name = 'token'
+
     def authenticate(self, request: HttpRequest, key: Optional[str]) -> Optional[Any]:
-        return (Token.objects.filter(key=key).all()) or request.user.is_staff # Change to right perms check
+        return (Token.objects.filter(key=key).all()) or request.user.is_staff  # Change to right perms check
 
 
 apiauth = ApiAuth()
@@ -38,6 +40,7 @@ class CheckInitDataResponse(Schema):
 class ScannedRequest(Schema):
     auth: str = Field(...)
     qr_data: str = Field(...)
+    event_id: int = Field()
 
 
 class ErrorResponse(Schema):
@@ -107,6 +110,7 @@ class VoteResponse(Schema):
     option_id: int = Field(...)
     text: str = Field(...)
 
+
 class UserIdResponse(Schema):
     user_id: int = Field(..., example=13)
 
@@ -122,13 +126,16 @@ class UserIdRequest(Schema):
 class UserChatIdRequest(Schema):
     __root__: int = Field(..., example=1)
 
+
 class SendMessageRequest(Schema):
     user_id: int = Field(..., example=123)
     message: str = Field(..., example='Hello world!')
 
+
 class MessageSentResponse(Schema):
     message: str = Field(..., example='Hello world!')
     message_id: int = Field(..., example=1)
+
 
 @api.post("/checkinitdata", response=CheckInitDataResponse)
 def checkinitdata_request(request, data: CheckInitDataRequest):
@@ -152,8 +159,17 @@ def scanned_request(request, data: ScannedRequest):
         participant = User.objects.get(qr=qr_data)
     except Exception as ex:
         return 400, ErrorResponse(reason="User with this qr_data not found")
-    # CHECK IF USER IS ORGANIZER
-    # DO MAGIC
+
+    user = User.objects.get(pk=user_id)
+    if not user.is_organizer:
+        return 400, ErrorResponse(reason="Unauthorized user")
+
+    attendance = Attendance.objects.get(pk=data.event_id)
+    log = AttendanceLog(
+        attendance=attendance,
+        user=participant,
+    )
+    log.save()
 
     sendmessage(participant.id, "Вас отметили")
 
@@ -173,9 +189,8 @@ def error_request(request: WSGIRequest, data: ExceptionRequest = Form(...), trac
         error_model.save()
     return ExceptionResponse(error_id=error_id, error_url=error_model.traceback_page)
 
+
 @api.get("/logs", response={200: LogsResponse, 500: ErrorResponse}, auth=apiauth)
-
-
 def logs_request(request: WSGIRequest):
     try:
         logs = requests.get(settings.BOT_URL + '/logs').json()["logs"]
@@ -183,20 +198,20 @@ def logs_request(request: WSGIRequest):
         return 500, ErrorResponse(reason=str(ex.args))
     return 200, LogsResponse(logs=logs)
 
+
 @api.get("/user/id", response={200: UserIdResponse, 400: ErrorResponse}, auth=apiauth)
 def user_id_request(request: WSGIRequest, chat_id: int):
     try:
         response = requests.get(settings.BOT_URL + '/user/id', params={'chat_id': chat_id})
         data = response.json()
 
-
-        
         if not response.ok:
             return 400, ErrorResponse(**data)
         user_id = data['user_id']
     except Exception as ex:
         return 400, ErrorResponse(reason=str(ex))
     return 200, UserIdResponse(user_id=user_id)
+
 
 @api.get("/user/chat-id", response={200: UserChatIdResponse, 400: ErrorResponse}, auth=apiauth)
 def user_id_request(request: WSGIRequest, user_id: int):
@@ -210,6 +225,7 @@ def user_id_request(request: WSGIRequest, user_id: int):
         return 400, ErrorResponse(reason=str(ex))
     return 200, UserChatIdResponse(chat_id=chat_id)
 
+
 @api.post("/user/message", response={200: MessageSentResponse, 400: ErrorResponse}, auth=apiauth)
 def send_msg_request(request: WSGIRequest, data: SendMessageRequest):
     try:
@@ -220,6 +236,7 @@ def send_msg_request(request: WSGIRequest, data: SendMessageRequest):
     except Exception as ex:
         return 400, ErrorResponse(reason=str(ex))
     return 200, MessageSentResponse(**data)
+
 
 @api.post("/qr", response={200: QRResponse, 400: ErrorResponse})
 def qr_request(request: WSGIRequest, data: QRRequest):
@@ -277,7 +294,8 @@ def event_register_request(request: WSGIRequest, data: RegistrationRequest):
 
         if registration_event.max < registration_event.count:
             return 200, RegistrationResponse(registration_id=data.registration_id, option_id=data.option_id,
-                                             new_text=registration_event.bot_text, message=registration_event.full_message)
+                                             new_text=registration_event.bot_text,
+                                             message=registration_event.full_message)
 
         message = registration_event.success_message
 
@@ -308,9 +326,50 @@ def event_register_request(request: WSGIRequest, data: RegistrationRequest):
 
 @api.post("/vote/response", response={200: VoteResponse, 400: ErrorResponse})
 def choose_request(request: WSGIRequest, data: VoteRequest):
-    pass
-  
-  
+    try:
+        vote = Vote.objects.get(pk=data.vote_id)
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args[0])
+
+    try:
+        user = User.objects.get(pk=data.user_id)
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args[0])
+
+    try:
+        vote_option = VoteOption.objects.get(pk=data.option_id)
+
+        if vote_option.team == user.team:
+            return 200, VoteResponse(vote_id=data.vote_id, option_id=data.option_id,
+                                     text=vote.same_team_message)
+
+        message = vote.success_message
+
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args[0])
+
+    logs = VoteLog.objects.filter(user=User.objects.get(pk=data.user_id), broadcast=vote)
+
+    if logs.exists():
+        return 200, VoteResponse(vote_id=data.vote_id, option_id=data.option_id,
+                                 text=vote.error_message)
+    try:
+        registry = VoteLog(
+            time=datetime.datetime.now(),
+            date=datetime.date.today(),
+            user=User.objects.get(pk=data.user_id),
+            broadcast=vote,
+            voted_option=vote_option
+        )
+        registry.save()
+
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args)
+
+    return 200, VoteResponse(vote_id=data.vote_id, option_id=data.option_id,
+                             text=message)
+
+
 @api.exception_handler(AuthenticationError)
 def unauthorizedError(request, exc):
     return api.create_response(request, {'reason': 'Unauthorized'}, status=401)
