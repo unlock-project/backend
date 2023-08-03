@@ -14,6 +14,7 @@ from django.dispatch.dispatcher import receiver
 def generateKey():
     return ''.join(random.choices(string.ascii_letters + string.digits, k=30))
 
+
 # Create your models here.
 class Broadcast(PolymorphicModel):
     name = models.CharField(max_length=100, blank=True, null=True)
@@ -53,6 +54,18 @@ class Vote(Broadcast):
     event = models.ForeignKey(Event, on_delete=models.DO_NOTHING, null=True, blank=True)
     close_time = models.TimeField(auto_now=False, null=True, blank=True)
 
+    @property
+    def success_message(self):
+        return f"Спасибо за выбор!"
+
+    @property
+    def error_message(self):
+        return f"Ты уже проголосовал "
+
+    @property
+    def same_team_message(self):
+        return f"Ты не можешь за свою команду голосовать"
+
 
 class VoteOption(models.Model):
     text = models.TextField(max_length=100)
@@ -71,8 +84,10 @@ class Registry(Broadcast):
     text = models.TextField(max_length=500)
     event = models.ForeignKey(Event, on_delete=models.DO_NOTHING, null=True, blank=True)
 
+
 class Token(models.Model):
     key = models.TextField(max_length=50, default=generateKey)
+
 
 class RegistryEvent(models.Model):
     text = models.TextField(max_length=100)
@@ -122,6 +137,20 @@ class VoteLog(ResponseLog):
     broadcast = models.ForeignKey(to=Vote, on_delete=models.DO_NOTHING, )
     voted_option = models.ForeignKey(to=VoteOption,
                                      on_delete=models.DO_NOTHING, )
+
+
+@receiver(post_save, sender=VoteLog)
+def _register_to_event(sender, instance: VoteLog, **kwargs):
+    vote_option = VoteOption.objects.get(pk=instance.voted_option.id)
+    vote_option.count += 1
+    vote_option.save()
+
+
+@receiver(post_delete, sender=VoteLog)
+def _cancel_register(sender, instance: VoteLog, **kwargs):
+    vote_option = VoteOption.objects.get(pk=instance.voted_option.id)
+    vote_option.count -= 1
+    vote_option.save()
 
 
 class RegistryLog(ResponseLog):

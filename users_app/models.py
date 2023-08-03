@@ -23,7 +23,7 @@ class User(AbstractUser):
     balance = models.IntegerField(default=0)
     telegram = models.CharField(max_length=100, null=True, blank=True)
     qr = models.CharField(max_length=100, unique=True, blank=True)
-
+    is_organizer = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         super().save()
