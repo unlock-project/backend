@@ -97,3 +97,4 @@ def sendmessage(user_id: int, message: str):
                              data=data,
                              headers={"content-type": "application/json", })
     return response.ok
+

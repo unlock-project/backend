@@ -151,3 +151,5 @@ AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 AUTH_USER_MODEL = 'users_app.User'
 
 BOT_URL = os.getenv('UNLOCK_BOT_URL', '')
+
+LOGIN_REDIRECT_URL = '/'

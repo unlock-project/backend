@@ -47,7 +47,7 @@ class ErrorAdmin(admin.ModelAdmin):
     list_display = ["id", ]
     form = ErrorAdminForm
 
-
+    
 @admin.action(description="Запуск рассылку")
 def make_published(modeladmin, request, queryset):
     for obj in queryset:
@@ -153,3 +153,7 @@ class AttendanceAdmin(PolymorphicChildModelAdmin):
 
 admin.site.register(VoteOption, )
 admin.site.register(RegistryEvent, )
+
+@admin.register(Token)
+class TokenAdmin(admin.ModelAdmin):
+    list_display = ["id", ]

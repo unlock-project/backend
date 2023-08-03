@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse, Http404, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Error
 
 
@@ -33,3 +33,5 @@ def specific_log(request, filename):
 
 def qr_page(request):
     return render(request, f"qr/index.html")
+
+
