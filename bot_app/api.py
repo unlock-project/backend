@@ -9,7 +9,7 @@ from ninja.errors import AuthenticationError
 from ninja.responses import Response
 from .models import *
 from ninja.security import APIKeyQuery
-from events_app.models import Attendance, AttendanceLog
+from events_app.models import Attendance, AttendanceLog, Promo, BonusUser
 from .services import checkinitdata, sendmessage
 import datetime
 
@@ -108,6 +108,16 @@ class VoteRequest(Schema):
 class VoteResponse(Schema):
     vote_id: int = Field(...)
     option_id: int = Field(...)
+    text: str = Field(...)
+
+
+class PromoRequest(Schema):
+    code: str = Field(...)
+    user_id: int = Field(...)
+
+
+class PromoResponse(Schema):
+    code: str = Field(...)
     text: str = Field(...)
 
 
@@ -369,6 +379,51 @@ def choose_request(request: WSGIRequest, data: VoteRequest):
 
     return 200, VoteResponse(vote_id=data.vote_id, option_id=data.option_id,
                              text=message)
+
+
+@api.post("/promo/activate", response={200: PromoResponse, 400: ErrorResponse})
+def choose_request(request: WSGIRequest, data: PromoRequest):
+    try:
+        user = User.objects.get(pk=data.user_id)
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args[0])
+
+    try:
+        promo = Promo.objects.get(promo_code=data.code)
+
+        if promo.condition == 2:
+            return 200, PromoResponse(code=data.code,
+                                      text=promo.used_message)
+
+    except Exception as ex:
+        return 200, PromoResponse(code=data.code,
+                                  text="Промокод не найден")
+
+    try:
+
+        if promo.code_type == 1:
+            promo.used_by = f"{user.first_name} {user.last_name}"
+            user.balance += promo.score
+            user.save()
+
+        elif promo.code_type == 2:
+            team = user.team
+            promo.used_by = f"{team.name}, {user.first_name} {user.last_name}"
+            team.balance += promo.score
+            users = User.objects.filter(team_id=user.team_id)
+            for user_ in users:
+                user_.balance += promo.score
+                user_.save()
+            team.save()
+
+        promo.condition = 2
+        promo.save()
+
+    except Exception as ex:
+        return 400, ErrorResponse(reason=ex.args)
+
+    return 200, PromoResponse(code=data.code,
+                              text=promo.message)
 
 
 @api.exception_handler(AuthenticationError)
