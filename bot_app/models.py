@@ -83,7 +83,7 @@ class RegistryEvent(models.Model):
 
     @property
     def error_message(self):
-        return f"Ты уже зарегистрировался на {self.text}"
+        return f"Ты уже зарегистрировался"
 
     @property
     def full_message(self):

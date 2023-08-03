@@ -202,7 +202,7 @@ def event_register_request(request: WSGIRequest, data: RegistrationRequest):
     try:
         registration_event = RegistryEvent.objects.get(pk=data.option_id)
 
-        if registration_event.max <= registration_event.count:
+        if registration_event.max < registration_event.count:
             return 200, RegistrationResponse(registration_id=data.registration_id, option_id=data.option_id,
                                              new_text=registration_event.bot_text, message=registration_event.full_message)
 
@@ -211,6 +211,11 @@ def event_register_request(request: WSGIRequest, data: RegistrationRequest):
     except Exception as ex:
         return 400, ErrorResponse(reason=ex.args[0])
 
+    logs = RegistryLog.objects.filter(user=User.objects.get(pk=data.user_id), broadcast=registration)
+
+    if logs.exists():
+        return 200, RegistrationResponse(registration_id=data.registration_id, option_id=data.option_id,
+                                         new_text=registration_event.bot_text, message=registration_event.error_message)
     try:
         registry = RegistryLog(
             time=datetime.datetime.now(),
