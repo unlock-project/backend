@@ -4,9 +4,7 @@ from django.dispatch import receiver
 from django.utils import timezone
 from polymorphic.models import PolymorphicModel
 from users_app.models import Team, User
-import string
-import random
-
+import secrets
 
 class Event(PolymorphicModel):
     name = models.CharField(max_length=255, null=True, unique=True)
@@ -67,7 +65,7 @@ class BonusUser(Event):
 
 
 def generate_promo():
-    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+    return secrets.token_hex(4).upper()
 
 
 class Promo(Event):

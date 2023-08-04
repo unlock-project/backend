@@ -1,11 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from .managers import CustomUserManager
+import secrets
 
 
 # Create your models here.
 def generateQrData():
-    return "fsadfjks"
+    return secrets.token_hex(3)
 
 class Team(models.Model):
     name = models.CharField(max_length=100)

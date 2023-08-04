@@ -1,18 +1,18 @@
 import os
-import string
-import random
+import secrets
 
 from django.conf import settings
 from django.db import models
-from events_app.models import Event
-from users_app.models import User, Team
-from polymorphic.models import PolymorphicModel
 from django.db.models.signals import post_delete, post_save
 from django.dispatch.dispatcher import receiver
+from polymorphic.models import PolymorphicModel
+
+from events_app.models import Event
+from users_app.models import User, Team
 
 
 def generateKey():
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=30))
+    return secrets.token_hex(16)
 
 
 # Create your models here.
@@ -86,7 +86,7 @@ class Registry(Broadcast):
 
 
 class Token(models.Model):
-    key = models.TextField(max_length=50, default=generateKey)
+    key = models.CharField(max_length=50, default=generateKey, unique=True)
 
 
 class RegistryEvent(models.Model):
