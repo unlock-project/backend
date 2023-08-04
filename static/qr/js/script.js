@@ -25,7 +25,7 @@ function showQR(qr_data){
         height: 250,
         type: "svg",
         data: qr_data,
-        image: "{% static 'qr/images/unlock_logo1.svg' %}",
+        image: "{% static '/images/logo.svg' %}",
         dotsOptions: {
             color: "#000000",
             type: "rounded"
