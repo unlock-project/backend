@@ -7,7 +7,10 @@ from .models import *
 
 class ContestAdminInline(admin.TabularInline):
     model = ContestLog
+    # readonly_fields = ["team", "score"]
+
     extra = 0
+
 
 
 class BonusTeamAdminInline(admin.TabularInline):
@@ -22,18 +25,18 @@ class BonusUserAdminInline(admin.TabularInline):
 
 class AttendanceAdminInline(admin.TabularInline):
     model = AttendanceLog
+    readonly_fields = ['user', 'team']
+
     extra = 0
 
 
 @admin.register(Event)
 class EventAdmin(PolymorphicParentModelAdmin):
     model = Event
-    list_filter = (PolymorphicChildModelFilter,)
+    list_filter = (PolymorphicChildModelFilter, 'date',)
     child_models = (
         Attendance,
         Contest,
-        BonusTeam,
-        BonusUser,
         Promo,
     )
 
@@ -46,6 +49,8 @@ class EventAdmin(PolymorphicParentModelAdmin):
 @admin.register(Attendance)
 class AttendanceAdmin(PolymorphicChildModelAdmin):
     base_model = Attendance
+    list_display = ('id', 'name', 'score')
+    # list_editable = ('score',)
     inlines = [
         AttendanceAdminInline,
     ]

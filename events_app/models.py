@@ -94,6 +94,9 @@ class ContestLog(models.Model):
     contest = models.ForeignKey(Contest, on_delete=models.CASCADE)
     score = models.IntegerField(default=0)
 
+    def __str__(self):
+        return f"{self.id} | {self.team} | {self.contest}"
+
 
 class BonusTeamLog(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE, db_index=True, default=None, blank=True, null=True)
@@ -118,7 +121,13 @@ class BonusUserLog(models.Model):
 class AttendanceLog(models.Model):
     attendance = models.ForeignKey(Attendance, on_delete=models.CASCADE, default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True, default=0)
-    pass
+
+    def __str__(self):
+        return f"{self.id} | {self.user.first_name} {self.user.last_name} | {self.attendance}"
+
+    @property
+    def team(self):
+        return self.user.team
 
 
 # Signals
@@ -148,11 +157,11 @@ def contest_log_post_save(sender, instance, **kwargs):
     team = instance.team
     team.balance += instance.score - instance._original_score
     team.save()
-
-    users = get_users_by_team_id(team.id)
-    for user in users:
-        user.balance += instance.score - instance._original_score
-        user.save()
+    #
+    # users = get_users_by_team_id(team.id)
+    # for user in users:
+    #     user.balance += instance.score - instance._original_score
+    #     user.save()
 
 
 @receiver(post_delete, sender=ContestLog)
@@ -161,10 +170,10 @@ def contest_log_post_delete(sender, instance, **kwargs):
     team.balance -= instance.score
     team.save()
 
-    users = get_users_by_team_id(team.id)
-    for user in users:
-        user.balance -= instance.score
-        user.save()
+    # users = get_users_by_team_id(team.id)
+    # for user in users:
+    #     user.balance -= instance.score
+    #     user.save()
 
 
 # Bonus Team
@@ -189,10 +198,10 @@ def bonus_team_log_post_save(sender, instance, **kwargs):
     team.balance += instance.score - instance._original_score
     team.save()
 
-    users = get_users_by_team_id(team.id)
-    for user in users:
-        user.balance += instance.score - instance._original_score
-        user.save()
+    # users = get_users_by_team_id(team.id)
+    # for user in users:
+    #     user.balance += instance.score - instance._original_score
+    #     user.save()
 
 
 @receiver(post_delete, sender=BonusTeamLog)
@@ -201,10 +210,10 @@ def bonus_team_log_post_delete(sender, instance, **kwargs):
     team.balance -= instance.score
     team.save()
 
-    users = get_users_by_team_id(team.id)
-    for user in users:
-        user.balance -= instance.score
-        user.save()
+    # users = get_users_by_team_id(team.id)
+    # for user in users:
+    #     user.balance -= instance.score
+    #     user.save()
 
 
 # Bonus User
@@ -263,10 +272,10 @@ def check_and_apply_promo_code(user_id, promo_code):
         team = user.team
         entry_promo.used_by = f"{team.name}, {user.first_name} {user.last_name}"
         team.balance += entry_promo.score
-        users = User.objects.filter(team_id=user.team_id)
-        for user_ in users:
-            user_.balance += entry_promo.score
-            user_.save()
+        # users = User.objects.filter(team_id=user.team_id)
+        # for user_ in users:
+        #     user_.balance += entry_promo.score
+        #     user_.save()
         team.save()
 
     entry_promo.condition = 2
@@ -303,6 +312,6 @@ def mark_attendance(user_id, attendance_id):
 @receiver(post_save, sender=AttendanceLog)
 def attendance_log_post_save(sender, instance, **kwargs):
     user = instance.user
-    attendance = Attendance.objects.get(id=instance.attendance)
+    attendance = Attendance.objects.get(id=instance.attendance.id)
     user.balance += attendance.score
     user.save()

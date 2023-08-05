@@ -60,11 +60,11 @@ class Vote(Broadcast):
 
     @property
     def error_message(self):
-        return f"Ты уже проголосовал "
+        return f"Ты уже проголосовал."
 
     @property
     def same_team_message(self):
-        return f"Ты не можешь за свою команду голосовать"
+        return f"Ты не можешь за свою команду голосовать."
 
 
 class VoteOption(models.Model):
