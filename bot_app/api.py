@@ -454,10 +454,6 @@ def choose_request(request: WSGIRequest, data: PromoRequest):
             team = user.team
             promo.used_by = f"{team.name}, {user.first_name} {user.last_name}"
             team.balance += promo.score
-            users = User.objects.filter(team_id=user.team_id)
-            for user_ in users:
-                user_.balance += promo.score
-                user_.save()
             team.save()
 
         promo.condition = 2
