@@ -37,7 +37,7 @@ class BalanceSchema(Schema):
 @api.post("/register", response=UserSchema)
 def register(request, data: BotRegisterSchema):
     telegram = data.username
-    user = User.objects.get(telegram=telegram)
+    user = User.objects.get(telegram__iexact=telegram)
     return user
 
 
