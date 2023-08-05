@@ -23,7 +23,7 @@ class Attendance(Event):
     score = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.time.strftime('%H:%M')} | {self.name}"
+        return f"{self.name}"
 
     class Meta:
         verbose_name = 'Attendance'
