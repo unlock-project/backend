@@ -12,7 +12,7 @@ import secrets
 class Event(PolymorphicModel):
     name = models.CharField(max_length=255, null=True, unique=True)
     date = models.DateField(default=timezone.now)
-    time = models.TimeField(default=timezone.now)
+    time = models.TimeField(default=timezone.now) # pizdets
 
     def __str__(self):
         return f"{self.date} | {self.name}"
