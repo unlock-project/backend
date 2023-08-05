@@ -15,6 +15,6 @@ RUN pip3 install -r requirements.txt
 
 RUN python manage.py collectstatic --noinput
 
-RUN python manage.py makemigrations
+#RUN python manage.py makemigrations
 RUN python manage.py migrate
 
