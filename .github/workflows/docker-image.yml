@@ -23,4 +23,3 @@ jobs:
       run: docker build . --file Dockerfile --tag mulsha/unlock:v1
     - name: Docker Push
       run: docker push mulsha/unlock:v1-prod
-      
