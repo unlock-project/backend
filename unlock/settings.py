@@ -14,7 +14,7 @@ from pathlib import Path
 from dotenv import load_dotenv, find_dotenv
 import os
 
-load_dotenv(find_dotenv())
+load_dotenv(".env")
 
 EMAIL_HOST = os.getenv('UNLOCK_EMAIL_HOST')
 

@@ -60,19 +60,26 @@ def get_balance(request, user_id: int):
 # @api.get("/gen/org", response=UserSchema)
 # def get_balance(request):
 #     passwords = []
-#     with open(BASE_DIR / "data organizers.csv", "r") as file:
+#     with open(BASE_DIR / "users data.csv", "r") as file:
 #         for row in file:
+#
 #             arr = row.strip().split(",")
+#             print(arr)
 #             username = arr[2]
 #             first_name = arr[1]
 #             last_name = arr[0]
 #             telegram = arr[2]
 #             password = secrets.token_hex(5)
 #             passwords.append(username + ", "+ password + "\n")
-#             user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, telegram=telegram, password=password)
-#             user.save()
+#             try:
 #
-#     with open(BASE_DIR / "credits.csv", "w") as file:
+#                 user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, telegram=telegram, password=password)
+#                 user.save()
+#
+#             except Exception as ex:
+#                 pass
+#
+#     with open(BASE_DIR / "credits users.csv", "w") as file:
 #         file.writelines(passwords)
 #
 #     return user
