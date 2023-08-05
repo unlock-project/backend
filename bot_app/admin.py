@@ -47,7 +47,7 @@ class ErrorAdmin(admin.ModelAdmin):
     list_display = ["id", ]
     form = ErrorAdminForm
 
-    
+
 @admin.action(description="Запуск рассылку")
 def make_published(modeladmin, request, queryset):
     for obj in queryset:
@@ -66,19 +66,26 @@ def make_published(modeladmin, request, queryset):
 
 class BroadcastChildAdmin(PolymorphicChildModelAdmin):
     base_model = Broadcast
-    list_display = ["id", "text", "activated"]
-    ordering = ["id"]
+    list_display = ["id", "text", "activated", "response"]
+    ordering = ["id", "data"]
     actions = [make_published]
 
 
 @admin.register(Broadcast)
 class BroadcastParentAdmin(PolymorphicParentModelAdmin):
-    """ The parent model admin """
+
     base_model = Broadcast
-    list_display = ["id", "name", "activated"]
+
+    def broadcast_type(self, obj):
+        return obj.get_real_instance_class().__name__
+
+    list_display = ["id", "name", "broadcast_type", "response", "activated", ]
+    ordering = ["id", "date"]
+
     child_models = (Question, Vote, Registry, Message)
     list_filter = (PolymorphicChildModelFilter,)
     actions = [make_published]
+    polymorphic_list = False
 
 
 class AnswerAdminInline(admin.TabularInline):
@@ -105,7 +112,6 @@ class RegistryEventAdminInline(admin.TabularInline):
     model = RegistryEvent
     extra = 0
     fields = ["id", "text", "max", "count"]
-
 
 
 @admin.register(Message)
@@ -153,6 +159,7 @@ class AttendanceAdmin(PolymorphicChildModelAdmin):
 
 admin.site.register(VoteOption, )
 admin.site.register(RegistryEvent, )
+
 
 @admin.register(Token)
 class TokenAdmin(admin.ModelAdmin):

@@ -1,0 +1,22 @@
+version: '3.3'
+services:
+  unlock_backend:
+    image: mulsha/unlock:v1
+    command: "gunicorn -c gunicorn.py unlock.wsgi"
+    volumes:
+      - /home/unlock/apps/unlock/static:/app/static
+      - /home/unlock/apps/unlock/tracebacks:/app/templates/tracebacks
+    ports:
+      - "8002:8000"
+    environment:
+      - UNLOCK_ALLOWED_HOSTS=unlock.naloaty.me
+      - UNLOCK_DEBUG=true
+      - UNLOCK_SECRET_KEY=unsecure
+      - UNLOCK_BOT_URL=http://unlock_bot:8001/api
+      - UNLOCK_DATABASE=postgres
+      - UNLOCK_DATABASE_HOST=psql.naloaty.me
+      - UNLOCK_DATABASE_PORT=5432
+      - UNLOCK_DATABASE_NAME=unlock_backend
+      - UNLOCK_DATABASE_USER=unlock
+      - UNLOCK_CSRF_TRUSTED_ORIGINS=https://unlock.naloaty.me
+      - UNLOCK_DATABASE_PASSWORD=pG4lrNctqGXnjHG8df1rPucxB
