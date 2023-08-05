@@ -8,6 +8,7 @@ import secrets
 def generateQrData():
     return secrets.token_hex(3)
 
+
 class Team(models.Model):
     name = models.CharField(max_length=100)
     balance = models.IntegerField(default=0)
@@ -36,5 +37,3 @@ class User(AbstractUser):
     @staticmethod
     def all_users():
         return User.objects.all()
-
-
