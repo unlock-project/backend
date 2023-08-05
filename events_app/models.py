@@ -1,3 +1,5 @@
+import datetime
+import time
 from django.db import models
 from django.db.models.signals import pre_delete, pre_save, post_save, post_delete
 from django.dispatch import receiver
@@ -6,20 +8,21 @@ from polymorphic.models import PolymorphicModel
 from users_app.models import Team, User
 import secrets
 
+
 class Event(PolymorphicModel):
     name = models.CharField(max_length=255, null=True, unique=True)
     date = models.DateField(default=timezone.now)
+    time = models.TimeField(default=timezone.now().time())
 
     def __str__(self):
         return f"{self.date} | {self.name}"
-
 
 
 class Attendance(Event):
     score = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.name
+        return f"{self.time.strftime('%H:%M')} | {self.name}"
 
     class Meta:
         verbose_name = 'Attendance'
@@ -37,7 +40,6 @@ class Contest(Event):
         verbose_name = 'Contest'
         verbose_name_plural = 'Contests'
 
-    pass
 
 
 class BonusTeam(Event):
@@ -49,7 +51,7 @@ class BonusTeam(Event):
         verbose_name = 'Team Bonus'
         verbose_name_plural = 'Team Bonuses'
 
-    pass
+
 
 
 class BonusUser(Event):
@@ -61,7 +63,7 @@ class BonusUser(Event):
         verbose_name = 'User Bonus'
         verbose_name_plural = 'User Bonuses'
 
-    pass
+
 
 
 def generate_promo():
@@ -87,6 +89,7 @@ class Promo(Event):
 
     def used_message(self):
         return "Промокод не активный"
+
 
 # Logs
 class ContestLog(models.Model):
@@ -314,4 +317,9 @@ def attendance_log_post_save(sender, instance, **kwargs):
     user = instance.user
     attendance = Attendance.objects.get(id=instance.attendance.id)
     user.balance += attendance.score
+    if user.team is not None:
+        team = user.team
+        users = User.objects.filter(team=team)
+        team.balance += attendance.score * 10 / len(users)
+        team.save()
     user.save()

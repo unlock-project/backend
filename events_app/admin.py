@@ -25,7 +25,7 @@ class BonusUserAdminInline(admin.TabularInline):
 
 class AttendanceAdminInline(admin.TabularInline):
     model = AttendanceLog
-    readonly_fields = ['user', 'team']
+    # readonly_fields = ['user', 'team']
 
     extra = 0
 

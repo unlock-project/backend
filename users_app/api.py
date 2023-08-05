@@ -1,8 +1,10 @@
 from ninja import NinjaAPI, ModelSchema, Schema
 from pydantic import Field
-
+from unlock.settings import BASE_DIR
 from .models import User, Team
 from django.core.exceptions import ObjectDoesNotExist
+import secrets
+
 
 api = NinjaAPI(urls_namespace="userapi")
 
@@ -53,3 +55,24 @@ def get_team(request, user_id: int):
 def get_balance(request, user_id: int):
     user = User.objects.get(pk=user_id)
     return BalanceSchema(user_id=user.id, balance=user.balance)
+
+
+# @api.get("/gen/org", response=UserSchema)
+# def get_balance(request):
+#     passwords = []
+#     with open(BASE_DIR / "data organizers.csv", "r") as file:
+#         for row in file:
+#             arr = row.strip().split(",")
+#             username = arr[2]
+#             first_name = arr[1]
+#             last_name = arr[0]
+#             telegram = arr[2]
+#             password = secrets.token_hex(5)
+#             passwords.append(username + ", "+ password + "\n")
+#             user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, telegram=telegram, password=password)
+#             user.save()
+#
+#     with open(BASE_DIR / "credits.csv", "w") as file:
+#         file.writelines(passwords)
+#
+#     return user
