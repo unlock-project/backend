@@ -17,6 +17,8 @@ class ErrorResponse(Schema):
 def today_schedule(request: WSGIRequest):
     events = events_today()
     message = ""
+    if not events.exists():
+        return 400, ErrorResponse(reason="There is no such events")
     for e in events:
         message += f"{str(e)}\n"
 
