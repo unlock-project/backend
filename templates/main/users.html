@@ -36,7 +36,11 @@
                       </thead>
                       <tbody>
                       {% for user in users %}
+                          {% if user.is_staff or user.is_organizer %}
+                        <tr class="table-danger">
+                        {% else %}
                         <tr>
+                        {% endif %}
                           <td>{{ user.id }}</td>
                           <td>{{ user.first_name }}</td>
                           <td>{{ user.last_name }}</td>
