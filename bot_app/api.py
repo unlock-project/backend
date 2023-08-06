@@ -20,7 +20,8 @@ class ApiAuth(APIKeyQuery):
     param_name = 'token'
 
     def authenticate(self, request: HttpRequest, key: Optional[str]) -> Optional[Any]:
-        return (Token.objects.filter(key=key).all()) or request.user.is_staff or request.user.is_organizer  # Change to right perms check
+        return (Token.objects.filter(key=key).all()) or (request.user.is_authenticated and
+                                                         (request.user.is_staff or request.user.is_organizer))  # Change to right perms check
 
 
 apiauth = ApiAuth()
@@ -311,7 +312,7 @@ def sendscanner_request(request: WSGIRequest, data: SendScannerRequest):
 
 
 
-@api.post("/question/response", response={200: QuestionResponse, 400: ErrorResponse})
+@api.post("/question/response", response={200: QuestionResponse, 400: ErrorResponse}, auth=apiauth)
 def answer_request(request: WSGIRequest, data: QuestionRequest):
     try:
         question = Question.objects.get(pk=data.question_id)
@@ -335,7 +336,7 @@ def answer_request(request: WSGIRequest, data: QuestionRequest):
     return 200, QuestionResponse(question_id=data.question_id, text=message)
 
 
-@api.post("/registration/response", response={200: RegistrationResponse, 400: ErrorResponse})
+@api.post("/registration/response", response={200: RegistrationResponse, 400: ErrorResponse}, auth=apiauth)
 def event_register_request(request: WSGIRequest, data: RegistrationRequest):
     try:
         registration = Registry.objects.get(pk=data.registration_id)
@@ -378,7 +379,7 @@ def event_register_request(request: WSGIRequest, data: RegistrationRequest):
                                      new_text=registration_event.bot_text, message=message)
 
 
-@api.post("/vote/response", response={200: VoteResponse, 400: ErrorResponse})
+@api.post("/vote/response", response={200: VoteResponse, 400: ErrorResponse}, auth=apiauth)
 def choose_request(request: WSGIRequest, data: VoteRequest):
     try:
         vote = Vote.objects.get(pk=data.vote_id)
@@ -424,7 +425,7 @@ def choose_request(request: WSGIRequest, data: VoteRequest):
                              text=message)
 
 
-@api.post("/promo/activate", response={200: PromoResponse, 400: ErrorResponse})
+@api.post("/promo/activate", response={200: PromoResponse, 404: ErrorResponse}, auth=apiauth)
 def choose_request(request: WSGIRequest, data: PromoRequest):
     try:
         user = User.objects.get(pk=data.user_id)
