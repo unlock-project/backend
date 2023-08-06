@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block head %}
     <style>
     #qr_code{
@@ -7,6 +8,7 @@
         margin: 0 auto;
     }
     </style>
+    <link rel="stylesheet" href="{% static 'css/sortable_table.css' %}">
 {% endblock %}
 {% block content %}
 {% if not user.is_authenticated %}
@@ -21,14 +23,14 @@
                         Do some actions with users
                     </p>
                     <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover" id="users_table">
                       <thead>
                         <tr>
-                          <th>Id</th>
-                          <th>First name</th>
-                          <th>Last name</th>
-                          <th>Team</th>
-                          <th>Balance</th>
+                          <th data-type="number" class="sortable">Id</th>
+                          <th data-type="string" class="sortable">First name</th>
+                          <th data-type="string" class="sortable">Last name</th>
+                          <th data-type="string" class="sortable">Team</th>
+                          <th data-type="number" class="sortable">Balance</th>
                           <th>Actions</th>
                         </tr>
                       </thead>
@@ -56,8 +58,8 @@
 {% endif %}
 {% endblock %}
 {% block scripts %}
-    {% load static %}
     <script src="{% static 'js/qrgen.js' %}"></script>
+    <script src="{% static 'js/table_sortable.js' %}"></script>
     <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <script>
     unlock_logo = "{% static 'qr/images/unlock_logo1.svg' %}"
