@@ -4,6 +4,7 @@ from unlock.settings import BASE_DIR
 from .models import User, Team
 from django.core.exceptions import ObjectDoesNotExist
 import secrets
+from bot_app.api import apiauth
 
 
 api = NinjaAPI(urls_namespace="userapi")
@@ -15,6 +16,9 @@ class BotRegisterSchema(Schema):
 
 class ErrorNotFound(Schema):
     error: str = "Not found"
+
+class ErrorResponse(Schema):
+    reason: str = Field(...)
 
 
 class UserSchema(ModelSchema):
@@ -34,24 +38,23 @@ class BalanceSchema(Schema):
     balance: int = Field(...)
 
 
-@api.post("/register", response=UserSchema)
+@api.post("/register", response=UserSchema, auth=apiauth)
 def register(request, data: BotRegisterSchema):
     telegram = data.username
     user = User.objects.get(telegram__iexact=telegram)
     return user
 
 
-@api.get("/team", response={200: TeamSchema, 400: ErrorNotFound})
+@api.get("/team", response={200: TeamSchema, 404: ErrorResponse}, auth=apiauth)
 def get_team(request, user_id: int):
     user = User.objects.get(pk=user_id)
     team = user.team
     if team is not None:
         return team
+    return 404, ErrorResponse(reason="У пользователя нет команды")
 
-    return 400, ErrorNotFound(error="У пользователя нет команды")
 
-
-@api.get("/balance", response=BalanceSchema)
+@api.get("/balance", response=BalanceSchema, auth=apiauth)
 def get_balance(request, user_id: int):
     user = User.objects.get(pk=user_id)
     return BalanceSchema(user_id=user.id, balance=user.balance)
