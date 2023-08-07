@@ -1,0 +1,10 @@
+    th.sortable{
+        cursor: pointer;
+    }
+
+    th.asc.sortable::after {
+        content: "↓";
+    }
+    th.desc.sortable::after {
+        content: "↑";
+    }
