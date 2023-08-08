@@ -3,8 +3,8 @@
     }
 
     th.asc.sortable::after {
-        content: "↓";
+        content: "\2193";
     }
     th.desc.sortable::after {
-        content: "↑";
+        content: "\2191";
     }
