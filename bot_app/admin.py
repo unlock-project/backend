@@ -1,11 +1,15 @@
 import json
 import traceback
+from typing import Optional
 
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin.widgets import AdminURLFieldWidget
 from django.forms import widgets, ModelForm
+from django.http import HttpResponse
 from django.utils.safestring import mark_safe
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter
+from requests import Response
+
 from bot_app.services import *
 
 from .models import *
@@ -50,18 +54,38 @@ class ErrorAdmin(admin.ModelAdmin):
 
 @admin.action(description="Запуск рассылку")
 def make_published(modeladmin, request, queryset):
+    fail_response: Optional[Response] = None
+    fail_broadcast: Optional[Broadcast] = None
     for obj in queryset:
         model = obj.get_real_instance_class()
+        response = None
         if model is Message:
-            broadcast_message(obj.get_real_instance())
+            response = broadcast_message(obj.get_real_instance())
         elif model is Question:
-            broadcast_question(obj.get_real_instance())
+            response = broadcast_question(obj.get_real_instance())
         elif model is Vote:
-            publish_vote(obj.get_real_instance())
+            response = publish_vote(obj.get_real_instance())
         elif model is Registry:
-            publish_registry(obj.get_real_instance())
+            response = publish_registry(obj.get_real_instance())
+
+        if response is not None and not response.ok and fail_response is None:
+            fail_response = response
+            fail_broadcast = obj
 
     queryset.update(activated=True)
+
+    if fail_response is not None:
+        try:
+            data = fail_response.json()
+            reason = data['reason']
+        except:
+            data = None
+            reason = None
+        messages.error(request, f'{fail_broadcast.name} publish failed. Code: {fail_response.status_code}'
+                                f'({fail_response.reason}). '
+                                f'{("Reason: " + reason) if reason is not None else ""}')
+    else:
+        messages.info(request, 'Успех')
 
 
 class BroadcastChildAdmin(PolymorphicChildModelAdmin):
