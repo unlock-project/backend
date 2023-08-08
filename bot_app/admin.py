@@ -73,7 +73,6 @@ class BroadcastChildAdmin(PolymorphicChildModelAdmin):
 
 @admin.register(Broadcast)
 class BroadcastParentAdmin(PolymorphicParentModelAdmin):
-
     base_model = Broadcast
 
     def broadcast_type(self, obj):
@@ -143,6 +142,23 @@ class AttendanceAdmin(PolymorphicChildModelAdmin):
         RegistryEventAdminInline,
         RegistryLogAdminInline,
     ]
+
+
+@admin.register(ResponseLog)
+class ResponseLogParentAdmin(PolymorphicParentModelAdmin):
+    base_model = ResponseLog
+
+    list_display = ["id", "user", "broadcast", ]
+
+    child_models = (RegistryLog,)
+    list_filter = (PolymorphicChildModelFilter,)
+
+
+@admin.register(RegistryLog)
+class AttendanceAdmin(PolymorphicChildModelAdmin):
+    base_model = RegistryLog
+    list_filter = ('broadcast', 'voted_option')
+    list_display = ("user", 'broadcast', 'voted_option')
 
 
 # @admin.register(ResponseLog)
