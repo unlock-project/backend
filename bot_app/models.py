@@ -3,8 +3,10 @@ import secrets
 
 from django.conf import settings
 from django.db import models
-from django.db.models.signals import post_delete, post_save
+from django.db.models.query_utils import DeferredAttribute
+from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch.dispatcher import receiver
+from django.utils.translation import gettext_lazy as _
 from polymorphic.models import PolymorphicModel
 
 from events_app.models import Event
@@ -41,6 +43,19 @@ class Error(models.Model):
     details = models.TextField()
     traceback_page = models.URLField()
 
+
+class Report(models.Model):
+    class ReportStatus(models.TextChoices):
+        RECEIVED = 'RC', _('Получено')
+        APPOINTED = 'AP', _('Принято в обработку')
+        DONE = "D", _('Выполнено')
+        CLOSED = 'CL', _('Закрыто')
+        CANCELED = 'CN', _('Отменено')
+
+
+    text = models.TextField()
+    status = models.CharField(max_length=2, choices=ReportStatus.choices, default=ReportStatus.RECEIVED)
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
 
 @receiver(post_delete, sender=Error)
 def _error_delete(sender, instance: Error, **kwargs):

@@ -51,6 +51,9 @@ class ErrorAdmin(admin.ModelAdmin):
     list_display = ["id", ]
     form = ErrorAdminForm
 
+@admin.register(Report)
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ["id", "sender", "status"]
 
 @admin.action(description="Запуск рассылку")
 def make_published(modeladmin, request, queryset):

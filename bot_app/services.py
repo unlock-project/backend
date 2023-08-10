@@ -1,7 +1,10 @@
 import json
 import requests
 from django.conf import settings
-from .models import Message, Question, Vote, VoteOption, Registry, RegistryEvent
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
+from .models import Message, Question, Vote, VoteOption, Registry, RegistryEvent, Report
 
 
 def broadcast_message(message: Message):
@@ -98,3 +101,13 @@ def sendmessage(user_id: int, message: str):
                              headers={"content-type": "application/json", })
     return response
 
+
+@receiver(pre_save, sender=Report)
+def _report_update(sender: Report, instance: Report, **kwargs):
+    try:
+        old_instance = Report.objects.get(id=instance.id)
+    except Report.DoesNotExist:
+        return
+    if old_instance.status != instance.status:
+        new_status_label = instance.ReportStatus(instance.status).label
+        sendmessage(instance.sender.id, f'Статус вашего обращения с номером <i><b>{instance.id}</b></i> изменился на <i><b>{new_status_label}</b></i>')
