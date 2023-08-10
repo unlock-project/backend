@@ -1,4 +1,8 @@
+import json
+
 from django.contrib import admin
+from django.db import IntegrityError
+from django.http import HttpResponseRedirect, HttpRequest
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter
 
 from django.db.models.signals import pre_save
@@ -86,7 +90,33 @@ class BonusUserAdmin(PolymorphicChildModelAdmin):
 class PromoAdmin(PolymorphicChildModelAdmin):
     base_model = Promo
     list_display = ('name', 'promo_code', 'condition', 'code_type', 'used_by', 'score', )
-    pass
+    add_form_template = 'promo/change_form.html'
+
+    def response_add(self, request: HttpRequest, obj: Promo, post_url_continue=None):
+        if "_add_bulk" in request.POST:
+            count_s = request.POST.get('count', 1)
+            count = int(count_s if count_s else '1')
+
+            for i in range(2, count+1):
+                for _ in range(5):
+                    try:
+                        n_promo = Promo(code_type=obj.code_type, score=obj.score,
+                                        message=obj.message, name=f'{obj.name}_{i}',
+                                        used_by=obj.used_by, condition=obj.condition)
+                        n_promo.save()
+                        break
+                    except IntegrityError as ex:
+                        pass
+                    except:
+                        break
+
+            obj.name = f'{obj.name}_1'
+            obj.save()
+
+            return HttpResponseRedirect("..")
+
+        else:
+            return super().response_add(request, obj, post_url_continue)
 
 
 
