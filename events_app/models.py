@@ -321,7 +321,7 @@ def attendance_log_post_save(sender, instance, **kwargs):
     if user.team is not None:
         team = user.team
         users = User.objects.filter(team=team)
-        team.balance += float(attendance.score) * 10 / float(len(users))
+        team.balance += (float(attendance.score) * 10 / float(len(users))) * 0.2
         team.balance = round(team.balance, 2)
         team.save()
     user.save()
