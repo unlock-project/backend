@@ -162,6 +162,14 @@ class SendScannerRequest(Schema):
 class SendScannerResponse(Schema):
     organizers_ids: List[int] = Field(...)
 
+class ReportRequest(Schema):
+    user_id: int = Field(...)
+    report_text: str = Field(...)
+
+class ReportResponse(Schema):
+    report_id: int = Field(...)
+    report_status: str = Field(...)
+
 @api.post("/checkinitdata", response=CheckInitDataResponse)
 def checkinitdata_request(request, data: CheckInitDataRequest):
     response = checkinitdata(data.auth)
@@ -222,6 +230,18 @@ def error_request(request: WSGIRequest, data: ExceptionRequest = Form(...), trac
         error_model.save()
     return ExceptionResponse(error_id=error_id, error_url=error_model.traceback_page)
 
+
+@api.post('/report', response={200: ReportResponse, 400: ErrorResponse}, auth=apiauth)
+def report_request(request: WSGIRequest, data: ReportRequest):
+    try:
+        user = User.objects.get(id=data.user_id)
+    except:
+        return 400, ErrorResponse(reason='User not found')
+
+    report = Report(text=data.report_text, sender=user)
+    report.save()
+    status_label = str(report.ReportStatus(report.status).label)
+    return ReportResponse(report_id=report.id, report_status=status_label)
 
 @api.get("/logs", response={200: LogsResponse, 500: ErrorResponse}, auth=apiauth)
 def logs_request(request: WSGIRequest):
