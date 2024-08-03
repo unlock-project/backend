@@ -11,10 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-from dotenv import load_dotenv, find_dotenv
 import os
 
-load_dotenv(".env")
 
 EMAIL_HOST = os.getenv('UNLOCK_EMAIL_HOST')
 
@@ -49,7 +47,6 @@ INSTALLED_APPS = [
     'users_app',
     'bot_app',
     'events_app',
-    'score_app',
     'admin_app',
 ]
 
@@ -137,14 +134,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+
+STATIC_URL = '/static/'
+STATIC_ROOT = 'static'
 
 # if DEBUG:
 #     STATICFILES_DIRS = [
 #        BASE_DIR / 'static'
 #     ]
 # else:
-STATIC_ROOT = 'static'
 
 
 # Default primary key field type

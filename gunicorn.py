@@ -10,9 +10,11 @@ max_requests = 1000
 worker_class = 'gevent'
 workers = max_workers()
 
+
 env = {
     'DJANGO_SETTINGS_MODULE': 'unlock.settings'
 }
+
 
 reload = True
 name = 'unlock'

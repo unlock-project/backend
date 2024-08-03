@@ -13,7 +13,7 @@ class Team(models.Model):
     name = models.CharField(max_length=100)
     balance = models.FloatField(default=0)
     tutor = models.OneToOneField("User", related_name="tutor", null=True, blank=True, on_delete=models.DO_NOTHING)
-
+    
     def __str__(self):
         return self.name
 

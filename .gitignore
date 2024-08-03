@@ -4,3 +4,5 @@
 venv
 *.sqlite3
 docker-compose.yml
+*.pyc
+*.log

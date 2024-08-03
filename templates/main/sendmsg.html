@@ -9,7 +9,7 @@
                 <div class="card-body">
                   <h4 class="card-title">Message</h4>
                     <p class="card-description">
-                        Send message to user by id
+                        Send message to user by id or to all users if user_id is 0
                     </p>
                     <div class="form-group">
                       <label for="inputUserId">User id</label>
@@ -35,7 +35,7 @@
     if(params.get('user_id')) $('#inputUserId').val(params.get('user_id'));
     if(params.get('message')) $('#inputMessage').val(params.get('message'));
     function sendMessage(){
-        post('/bot/api/user/message', {'user_id': $('#inputUserId').val(), 'message': $('#inputMessage').val()}).then(
+        post('/bot/api/user/message', {'user_id': parseInt($('#inputUserId').val()), 'message': $('#inputMessage').val()}).then(
             data => {
                 createAlert('Message Id: ' + data.message_id);
             }

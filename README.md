@@ -64,6 +64,7 @@ Follow the steps below in order to set up development environment.
 3. Migrate a database: `python manage.py migrate`.
 4. Run server: `python manage.py runserver`.
 
+
 ## Deploy
 
 Follow the steps below in order to deploy the system using Docker.
